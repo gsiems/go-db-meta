@@ -1,2 +1,3 @@
-# go-db-meta
+# go-information-schema
+
 Database metadata
