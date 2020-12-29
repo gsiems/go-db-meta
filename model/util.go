@@ -14,3 +14,22 @@ func csvToMap(s string) map[string]int {
 	}
 	return l
 }
+
+func (db *m.DB) QSingleString(q string) (sql.NullString, error) {
+
+	var v sql.NullString
+	rows, err := db.Query(q)
+	if err != nil {
+		return v, err
+	}
+	defer func() {
+		if cerr := rows.Close(); cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
+
+	if rows.Next() {
+		err = rows.Scan(&v)
+	}
+	return v, err
+}
