@@ -10,7 +10,10 @@ import (
 func Tables(db *m.DB, schema string) ([]m.Table, error) {
 
 	q := `
-SELECT 'pg_catalog.current_database () AS catalog_name,
+WITH args AS (
+    SELECT $1 AS schema_name
+)
+SELECT pg_catalog.current_database () AS catalog_name,
         n.nspname AS table_schema,
         c.relname AS table_name,
         pg_catalog.pg_get_userbyid ( c.relowner ) AS table_owner,
@@ -25,14 +28,16 @@ SELECT 'pg_catalog.current_database () AS catalog_name,
         CASE c.relkind
             WHEN 'v' THEN pg_catalog.pg_get_viewdef ( c.oid, true )
             WHEN 'm' THEN pg_catalog.pg_get_viewdef ( c.oid, true )
-            ELSE NULL
             END AS query
     FROM pg_catalog.pg_class c
+    CROSS JOIN args
     LEFT OUTER JOIN pg_catalog.pg_namespace n
         ON ( n.oid = c.relnamespace )
     WHERE c.relkind IN ( 'v', 'r', 'f', 'm' )
-        AND ( n.nspname = $1
-            OR $1 = '' )
+        AND n.nspname <> 'information_schema'
+        AND n.nspname !~ '^pg_'
+        AND ( n.nspname = args.schema_name
+            OR args.schema_name = '' )
 `
 	return db.Tables(q, schema)
 }

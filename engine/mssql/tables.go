@@ -10,6 +10,9 @@ import (
 func Tables(db *m.DB, schema string) ([]m.Table, error) {
 
 	q := `
+WITH args AS (
+    SELECT $1 AS schema_name
+)
 SELECT tabs.table_catalog,
         tabs.table_schema,
         tabs.table_name,
@@ -19,13 +22,14 @@ SELECT tabs.table_catalog,
         NULL AS comment,
         v.view_definition
     FROM information_schema.tables tabs
+    CROSS JOIN args
     LEFT JOIN information_schema.views v
         ON ( v.table_catalog = tabs.table_catalog
             AND v.table_schema = tabs.table_schema
             AND v.table_name = tabs.table_name )
     WHERE substring ( tabs.table_name, 1, 1 ) <> '#'
-        AND ( tabs.table_schema = $1
-            OR $1 = '' )
+        AND ( tabs.table_schema = args.schema_name
+            OR args.schema_name = '' )
 `
 	return db.Tables(q, schema)
 }

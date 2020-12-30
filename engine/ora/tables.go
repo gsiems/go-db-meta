@@ -10,45 +10,49 @@ import (
 func Tables(db *m.DB, schema string) ([]m.Table, error) {
 
 	q := `
-WITH tabs AS (
-    SELECT owner,
-            object_name,
-            min ( object_type ) AS object_type
+WITH args AS (
+    SELECT $1 AS schema_name,
+),
+tab AS (
+    SELECT obj.owner,
+            obj.object_name,
+            min ( obj.object_type ) AS object_type
         FROM dba_objects obj
-        WHERE ( owner = $1
-                OR $1 = '' )
-            AND owner NOT IN (
+        CROSS JOIN args
+        WHERE ( obj.owner = args.schema_name
+                OR args.schema_name = '' )
+            AND obj.owner NOT IN (
                     'APPQOSSYS', 'AWR_STAGE', 'CSMIG', 'CTXSYS', 'DBSNMP',
                     'DIP', 'DMSYS', 'DSSYS', 'EXFSYS', 'LBACSYS', 'MDSYS',
                     'OLAPSYS', 'ORACLE_OCM', 'ORDPLUGINS', 'ORDSYS', 'OUTLN',
                     'PERFSTAT', 'PUBLIC', 'SQLTXPLAIN', 'SYS', 'SYSMAN',
                     'SYSTEM', 'TRACESVR', 'TSMSYS', 'WMSYS', 'XDB' )
-            AND owner NOT LIKE '%$%'
-            AND object_type IN ( 'TABLE', 'VIEW', 'MATERIALIZED VIEW' )
-        GROUP BY owner,
-            object_name
+            AND obj.owner NOT LIKE '%$%'
+            AND obj.object_type IN ( 'TABLE', 'VIEW', 'MATERIALIZED VIEW' )
+        GROUP BY obj.owner,
+            obj.object_name
 )
 SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
-        tabs.owner AS table_schema,
-        tabs.object_name AS table_name
-        tabs.owner AS table_owner,
-        tabs.object_type AS table_type,
+        tab.owner AS table_schema,
+        tab.object_name AS table_name
+        tab.owner AS table_owner,
+        tab.object_type AS table_type,
         dt.num_rows AS row_count,
         cmt.comments,
         coalesce ( mv.query, dv.text ) AS view_definition
-    FROM tabs
+    FROM tab
     LEFT JOIN dba_tables dt
-        ON ( dt.owner = tabs.owner
-            AND dt.table_name = tabs.object_name )
+        ON ( dt.owner = tab.owner
+            AND dt.table_name = tab.object_name )
     LEFT JOIN dba_snapshots mv
-        ON ( mv.owner = tabs.owner
-            AND mv.table_name = tabs.object_name )
+        ON ( mv.owner = tab.owner
+            AND mv.table_name = tab.object_name )
     LEFT JOIN dba_views dv
-        ON ( dv.owner = tabs.owner
-            AND dv.view_name = tabs.object_name )
+        ON ( dv.owner = tab.owner
+            AND dv.view_name = tab.object_name )
     LEFT JOIN dba_tab_comments cmt
-        ON ( tabs.owner = cmt.owner
-            AND tabs.object_name = cmt.table_name )
+        ON ( tab.owner = cmt.owner
+            AND tab.object_name = cmt.table_name )
 `
 	return db.Tables(q, schema)
 }

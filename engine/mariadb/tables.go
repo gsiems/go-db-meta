@@ -9,7 +9,9 @@ import (
 // executing the query
 func Tables(db *m.DB, schema string) ([]m.Table, error) {
 
-	q := `SELECT t.table_catalog,
+// NB that mariadb doesn't appear to support CTEs
+	q := `
+SELECT t.table_catalog,
         t.table_schema,
         t.table_name,
         NULL AS table_owner,
@@ -18,12 +20,15 @@ func Tables(db *m.DB, schema string) ([]m.Table, error) {
         NULL AS comment, -- I have no idea how to retrieve this
         v.view_definition
     FROM information_schema.tables t
+    CROSS JOIN (
+        SELECT $1 AS schema_name
+    ) AS args
     LEFT JOIN information_schema.views v
         ON ( v.table_schema = t.table_schema
             AND v.table_name = t.table_name )
     WHERE t.table_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema' )
-        AND ( t.table_schema = $1
-            OR $1 = '' )
+        AND ( t.table_schema = args.schema_name
+            OR args.schema_name = '' )
 `
 	return db.Tables(q, schema)
 }
