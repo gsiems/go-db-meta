@@ -18,9 +18,9 @@ type Column struct {
 	DomainCatalog   sql.NullString `json:"domainCatalog"`
 	DomainSchema    sql.NullString `json:"domainSchema"`
 	DomainName      sql.NullString `json:"domainName"`
-	UdtCatalog      sql.NullString `json:"udtCatalog"`
-	UdtSchema       sql.NullString `json:"udtSchema"`
-	UdtName         sql.NullString `json:"udtName"`
+	//UdtCatalog      sql.NullString `json:"udtCatalog"`
+	//UdtSchema       sql.NullString `json:"udtSchema"`
+	//UdtName         sql.NullString `json:"udtName"`
 	//IsGenerated          sql.NullString `json:"isGenerated"`          // ??
 	//GenerationExpression sql.NullString `json:"generationExpression"` // ??
 	Comment sql.NullString `json:"comment"`
@@ -58,9 +58,9 @@ func (db *m.DB) Columns(q, tableSchema, tableName string) ([]Column, error) {
 			&u.DomainCatalog,
 			&u.DomainSchema,
 			&u.DomainName,
-			&u.UdtCatalog,
-			&u.UdtSchema,
-			&u.UdtName,
+			//&u.UdtCatalog,
+			//&u.UdtSchema,
+			//&u.UdtName,
 			&u.Comment,
 		)
 		if err != nil {
