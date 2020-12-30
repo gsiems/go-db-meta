@@ -45,7 +45,7 @@ func defaultCharacterSetName(db *m.DB) (sql.NullString, error) {
 
 	q := `
 SELECT d.value
-    FROM sys.nls_database_parameters d
+    FROM nls_database_parameters d
     WHERE d.parameter = 'NLS_CHARACTERSET'
 `
 
@@ -56,7 +56,7 @@ SELECT d.value
 
 	q = `
 SELECT coalesce ( s.value, d.value ) AS value
-    FROM sys.nls_database_parameters d
+    FROM nls_database_parameters d
     LEFT OUTER JOIN sys.nls_session_parameters s
         ON ( d.parameter = s.parameter )
     WHERE d.parameter = 'NLS_TERRITORY'
@@ -69,7 +69,7 @@ SELECT coalesce ( s.value, d.value ) AS value
 
 	q = `
 SELECT coalesce ( s.value, d.value ) AS value
-    FROM sys.nls_database_parameters d
+    FROM nls_database_parameters d
     LEFT OUTER JOIN sys.nls_session_parameters s
         ON ( d.parameter = s.parameter )
     WHERE d.parameter = 'NLS_LANGUAGE'
