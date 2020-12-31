@@ -21,8 +21,8 @@ SELECT current_database () AS table_catalog,
         a.attnum AS ordinal_position,
         pg_catalog.format_type ( a.atttypid, a.atttypmod ) AS data_type,
         CASE
-            WHEN a.attnotnull THEN 'N'
-            ELSE 'Y'
+            WHEN a.attnotnull THEN 'NO'
+            ELSE 'YES'
             END AS is_nullable,
         pg_catalog.pg_get_expr ( ad.adbin, ad.adrelid )  AS column_default,
         CASE
