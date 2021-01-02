@@ -28,7 +28,7 @@
             e.has_go_driver AS "Driver?",
             e.has_information_schema AS "IS?",
             CASE
-                WHEN label = 'sql2003' THEN "SQL:2003 Standard"
+                WHEN ic.label = 'sql2003' THEN 'SQL:2003 Standard'
                 ELSE e.remarks
                 END AS "Remarks",
             dbe.ranking AS "Ranking", -- as of Dec, 2020
