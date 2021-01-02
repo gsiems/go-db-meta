@@ -56,7 +56,7 @@
 
 ## Most supported INFORMATION_SCHEMA tables/views
 
- * for the databases analyzed
+(for the databases analyzed)
 
     WITH base AS (
         SELECT label,
@@ -75,7 +75,6 @@
         ORDER BY 3 desc,
             1 ;
 
-|
 | Table Name                            | Matches                                 | Qty |
 | ------------------------------------- | --------------------------------------- | --- |
 | COLUMN_PRIVILEGES                     | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
