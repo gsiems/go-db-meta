@@ -15,7 +15,7 @@
 
 # Data
 
- * Using data loaded into PostgreSQL for analysis (schemata.pgdump)
+ * Using data loaded into PostgreSQL for analysis [schemata.pgdump](schemata.pgdump)
 
 ## Databases to analyze and/or support
 
@@ -74,6 +74,7 @@
         HAVING count (*) > 2
         ORDER BY 3 desc,
             1 ;
+
 |
 | Table Name                            | Matches                                 | Qty |
 | ------------------------------------- | --------------------------------------- | --- |
