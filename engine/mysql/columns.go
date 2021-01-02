@@ -7,5 +7,5 @@ import (
 
 // Columns currently wraps the mariadb.Columns function
 func Columns(db *m.DB, tableSchema, tableName string) ([]m.Column, error) {
-	return e.Schemata(db, tableSchema, tableName)
+	return e.Columns(db, tableSchema, tableName)
 }
