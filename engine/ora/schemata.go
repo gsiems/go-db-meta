@@ -15,21 +15,28 @@ func Schemata(db *m.DB, nclude, xclude string) ([]m.Schema, error) {
 // TODO: Is there a way to query Oracle for the list of system accounts?
 
 	q := `
+WITH cs AS (
+    SELECT value$ AS cs_name
+      FROM props$
+      WHERE name = 'NLS_CHARACTERSET'
+)
 SELECT sys_context ( 'userenv', 'DB_NAME' ) AS catalog_name,
-        username AS schema_name,
-        username AS owner,
+        usr.username AS schema_name,
+        usr.username AS owner,
         NULL AS DefaultCharacterSetCatalog,
         NULL AS DefaultCharacterSetSchema,
-        NULL AS DefaultCharacterSetName,
+        cs.cs_name AS DefaultCharacterSetName,
+        -- sys_context ( 'userenv', 'NLS_SORT' ) AS default_collation_name,
         NULL AS comment
     FROM dba_users usr
-    WHERE username NOT IN (
+    CROSS JOIN cs
+    WHERE usr.username NOT IN (
             'APPQOSSYS', 'AWR_STAGE', 'CSMIG', 'CTXSYS', 'DBSNMP',
             'DIP', 'DMSYS', 'DSSYS', 'EXFSYS', 'LBACSYS', 'MDSYS',
             'OLAPSYS', 'ORACLE_OCM', 'ORDPLUGINS', 'ORDSYS', 'OUTLN',
             'PERFSTAT', 'PUBLIC', 'SQLTXPLAIN', 'SYS', 'SYSMAN',
             'SYSTEM', 'TRACESVR', 'TSMSYS', 'WMSYS', 'XDB' )
-        AND username NOT LIKE '%$%'
+        AND usr.username NOT LIKE '%$%'
         AND EXISTS (
             SELECT 1
                 FROM dba_objects obj
