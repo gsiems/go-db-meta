@@ -5,6 +5,59 @@ import (
 	"errors"
 )
 
+/*
+
+| Table Name                            | Column Name                       | Position | Matches                                 | Qty |
+| ------------------------------------- | --------------------------------- | -------- | --------------------------------------- | --- |
+| COLUMNS                               | TABLE_CATALOG                     | 1        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | TABLE_SCHEMA                      | 2        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | TABLE_NAME                        | 3        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | COLUMN_NAME                       | 4        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | ORDINAL_POSITION                  | 5        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | COLUMN_DEFAULT                    | 6        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | IS_NULLABLE                       | 7        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | DATA_TYPE                         | 8        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | CHARACTER_MAXIMUM_LENGTH          | 9        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | CHARACTER_OCTET_LENGTH            | 10       | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | NUMERIC_PRECISION                 | 11       | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | NUMERIC_PRECISION_RADIX           | 12       | sql2003, pg, mssql, hsqldb, h2          | 5   |
+| COLUMNS                               | NUMERIC_SCALE                     | 13       | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | DATETIME_PRECISION                | 14       | sql2003, pg, mssql, mariadb, hsqldb     | 5   |
+| COLUMNS                               | INTERVAL_TYPE                     | 15       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | INTERVAL_PRECISION                | 16       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | CHARACTER_SET_CATALOG             | 17       | sql2003, pg, mssql, hsqldb              | 4   |
+| COLUMNS                               | CHARACTER_SET_SCHEMA              | 18       | sql2003, pg, mssql, hsqldb              | 4   |
+| COLUMNS                               | CHARACTER_SET_NAME                | 19       | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | COLLATION_CATALOG                 | 20       | sql2003, pg, mssql, hsqldb              | 4   |
+| COLUMNS                               | COLLATION_SCHEMA                  | 21       | sql2003, pg, mssql, hsqldb              | 4   |
+| COLUMNS                               | COLLATION_NAME                    | 22       | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| COLUMNS                               | DOMAIN_CATALOG                    | 23       | sql2003, pg, mssql, hsqldb              | 4   |
+| COLUMNS                               | DOMAIN_SCHEMA                     | 24       | sql2003, pg, mssql, hsqldb              | 4   |
+| COLUMNS                               | DOMAIN_NAME                       | 25       | sql2003, pg, mssql, hsqldb              | 4   |
+| COLUMNS                               | UDT_CATALOG                       | 26       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | UDT_SCHEMA                        | 27       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | UDT_NAME                          | 28       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | SCOPE_CATALOG                     | 29       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | SCOPE_SCHEMA                      | 30       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | SCOPE_NAME                        | 31       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | MAXIMUM_CARDINALITY               | 32       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | DTD_IDENTIFIER                    | 33       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | IS_SELF_REFERENCING               | 34       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | IS_IDENTITY                       | 35       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | IDENTITY_GENERATION               | 36       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | IDENTITY_START                    | 37       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | IDENTITY_INCREMENT                | 38       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | IDENTITY_MAXIMUM                  | 39       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | IDENTITY_MINIMUM                  | 40       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | IDENTITY_CYCLE                    | 41       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | IS_GENERATED                      | 42       | sql2003, pg, mariadb, hsqldb            | 4   |
+| COLUMNS                               | GENERATION_EXPRESSION             | 43       | sql2003, pg, mariadb, hsqldb            | 4   |
+| COLUMNS                               | IS_UPDATABLE                      | 44       | sql2003, pg, hsqldb                     | 3   |
+| COLUMNS                               | COLUMN_TYPE                       |          | mariadb, h2                             | 2   |
+
+*/
+
+
 // Column contains details for Columns
 type Column struct {
 	TableCatalog    sql.NullString `json:"tableCatalog"`
@@ -18,11 +71,6 @@ type Column struct {
 	DomainCatalog   sql.NullString `json:"domainCatalog"`
 	DomainSchema    sql.NullString `json:"domainSchema"`
 	DomainName      sql.NullString `json:"domainName"`
-	//UdtCatalog      sql.NullString `json:"udtCatalog"`
-	//UdtSchema       sql.NullString `json:"udtSchema"`
-	//UdtName         sql.NullString `json:"udtName"`
-	//IsGenerated          sql.NullString `json:"isGenerated"`          // ??
-	//GenerationExpression sql.NullString `json:"generationExpression"` // ??
 	Comment sql.NullString `json:"comment"`
 }
 
@@ -58,9 +106,6 @@ func (db *m.DB) Columns(q, tableSchema, tableName string) ([]Column, error) {
 			&u.DomainCatalog,
 			&u.DomainSchema,
 			&u.DomainName,
-			//&u.UdtCatalog,
-			//&u.UdtSchema,
-			//&u.UdtName,
 			&u.Comment,
 		)
 		if err != nil {
