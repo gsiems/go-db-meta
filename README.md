@@ -13,10 +13,18 @@ exactly reflect the structure of the standard information schema. See
 [information_schema](information_schema/readme.md) for a comparison of
 different information_schema implementations.
 
+# Intended uses
+
+ * Generate data dictionaries
+ * DDL extraction/generation
+ * Database/schema comparisons
+ * ???
+
 # Roadmap
 
  1. Describe the structure of tables/views.
- 1. Describe any user defined domains/types used in tables.
- 1. Describe the relationsips between tables/views.
- 1. Describe the constraints on tables.
+ 1. Describe user defined domains/types.
+ 1. Describe primary keys and table relationships.
+ 1. Describe table constraints.
+ 1. Describe table indexes.
  1. ???
