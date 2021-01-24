@@ -176,6 +176,84 @@ COMMENT ON TABLE schemata.information_columns IS 'Data extracted from the SQL:20
 
 
 --
+-- Name: engines_compared; Type: VIEW; Schema: schemata; Owner: postgres
+--
+
+CREATE VIEW schemata.engines_compared AS
+ SELECT DISTINCT COALESCE(ic.label, e.label) AS "Label",
+    COALESCE(e.engine_name, 'n/a'::text) AS "DBMS",
+    COALESCE(e.has_go_driver, 'n/a'::text) AS "Has Driver?",
+    COALESCE(e.has_information_schema, 'n/a'::text) AS "Has IS?",
+        CASE
+            WHEN (ic.label IS NULL) THEN 'no'::text
+            ELSE 'yes'::text
+        END AS "Compared?",
+        CASE
+            WHEN (ic.label = 'sql2003'::text) THEN 'SQL:2003 Standard'::text
+            ELSE e.remarks
+        END AS "Remarks",
+    dbe.ranking AS "Ranking",
+    COALESCE(dbe.db_model, 'n/a'::text) AS "DB Model"
+   FROM ((schemata.information_columns ic
+     FULL JOIN schemata.engines e ON ((ic.label = e.label)))
+     LEFT JOIN schemata.db_engines_ranking dbe ON ((e.engine_name = dbe.engine_name)))
+  WHERE (COALESCE(ic.label, e.label, ''::text) <> ''::text)
+  ORDER BY dbe.ranking NULLS FIRST;
+
+
+ALTER TABLE schemata.engines_compared OWNER TO postgres;
+
+--
+-- Name: supported_columns; Type: VIEW; Schema: schemata; Owner: postgres
+--
+
+CREATE VIEW schemata.supported_columns AS
+ WITH base AS (
+         SELECT information_columns.label,
+            upper(information_columns.table_name) AS table_name,
+            upper(information_columns.column_name) AS column_name,
+                CASE
+                    WHEN (information_columns.label = 'sql2003'::text) THEN information_columns.ordinal_position
+                    ELSE NULL::integer
+                END AS ordinal_position
+           FROM schemata.information_columns
+          WHERE (upper(information_columns.table_schema) = 'INFORMATION_SCHEMA'::text)
+        )
+ SELECT base.table_name AS "Table Name",
+    base.column_name AS "Column Name",
+    max(base.ordinal_position) AS "Position",
+    string_agg(base.label, ', '::text ORDER BY base.label DESC) AS "Matches",
+    count(*) AS "Qty"
+   FROM base
+  GROUP BY base.table_name, base.column_name
+  ORDER BY base.table_name, (max(base.ordinal_position)), base.column_name;
+
+
+ALTER TABLE schemata.supported_columns OWNER TO postgres;
+
+--
+-- Name: supported_tables; Type: VIEW; Schema: schemata; Owner: postgres
+--
+
+CREATE VIEW schemata.supported_tables AS
+ WITH base AS (
+         SELECT information_columns.label,
+            upper(information_columns.table_name) AS table_name
+           FROM schemata.information_columns
+          WHERE (upper(information_columns.table_schema) = 'INFORMATION_SCHEMA'::text)
+          GROUP BY information_columns.label, (upper(information_columns.table_name))
+        )
+ SELECT base.table_name AS "Table Name",
+    string_agg(base.label, ', '::text ORDER BY base.label DESC) AS "Matches",
+    count(*) AS "Qty"
+   FROM base
+  GROUP BY base.table_name
+  ORDER BY (count(*)) DESC, base.table_name;
+
+
+ALTER TABLE schemata.supported_tables OWNER TO postgres;
+
+--
 -- Data for Name: data_types; Type: TABLE DATA; Schema: schemata; Owner: postgres
 --
 
