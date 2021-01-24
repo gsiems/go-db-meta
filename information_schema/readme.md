@@ -1,10 +1,16 @@
 # INFORMATION_SCHEMA
 
+A comparison of the information schema implementation for various RDBMS engines.
+
  * Ref: ISO standard 9075:2003 (draft) Part 11: Information and Definition Schemas
  * Not all DBMS engines have an information_schema
  * The information_schema for DBMS engines that do have an information_schema vary somewhat significantly
+   * Not all tables are supported by any specific RDBMS
+   * Not all columns in the tables are supported by any specific RDBMS
+   * Some RDBMS engines have additional tables not in the standard
+   * Some RDBMS engines have additional columns not in the standard
  * https://en.wikipedia.org/wiki/Information_schema
- * https://db-engines.com/en/ranking
+ * "Ranking" and "DB Model" information was obtained from https://db-engines.com/en/ranking (as of January 2020)
  * Compared the information_schema for the following databases:
    * [H2](https://h2database.com/html/main.html)
    * [HyperSQL](http://hsqldb.org/)
@@ -15,18 +21,18 @@
 
 # Data
 
- * Using data loaded into PostgreSQL for analysis [schemata.pgdump](schemata.pgdump)
+ * See [schemata.pgdump](schemata.pgdump) for the (PostgreSQL) data used for analysis
 
 ## Databases to analyze and/or support
 
     SELECT DISTINCT coalesce ( ic.label, e.label ) AS "Label",
             e.engine_name AS "DBMS",
+            e.has_go_driver AS "Has Driver?",
+            e.has_information_schema AS "Has IS?",
             CASE
                 WHEN ic.label IS NULL THEN 'no'
                 ELSE 'yes'
-                END AS "Compare?",
-            e.has_go_driver AS "Driver?",
-            e.has_information_schema AS "IS?",
+                END AS "Compared?",
             CASE
                 WHEN ic.label = 'sql2003' THEN 'SQL:2003 Standard'
                 ELSE e.remarks
@@ -35,23 +41,23 @@
             dbe.db_model AS "DB Model"
         FROM information_columns ic
         FULL JOIN engines e
-        ON ( ic.label = e.label )
+            ON ( ic.label = e.label )
         LEFT JOIN db_engines_ranking dbe
             ON ( e.engine_name = dbe.engine_name )
         WHERE coalesce ( ic.label, e.label, '' ) <> ''
         ORDER BY dbe.ranking NULLS FIRST ;
 
-| Label   | DBMS                 | Compare? | Driver? | IS? | Remarks                        | Ranking | DB Model                |
-| ------- | -------------------- | -------- | ------- | --- | ------------------------------ | ------- | ----------------------- |
-| sql2003 |                      | yes      |         |     |                                |         |                         |
-| ora     | Oracle               | no       | yes     | no  |                                | 1       | Relational, Multi-model |
-| mysql   | MySQL                | no       | yes     | yes | driver compatible with MariaDB | 2       | Relational, Multi-model |
-| mssql   | Microsoft SQL Server | yes      | yes     | yes | Version 2019                   | 3       | Relational, Multi-model |
-| pg      | PostgreSQL           | yes      | yes     | yes | Version 12.5                   | 4       | Relational, Multi-model |
-| sqlite  | SQLite               | no       | yes     | no  | Version 3.23.1                 | 9       | Relational              |
-| mariadb | MariaDB              | yes      | yes     | yes | Version 10.3                   | 12      | Relational, Multi-model |
-| h2      | H2                   | yes      | yes     | yes | Version 1.4.200                | 49      | Relational              |
-| hsqldb  | HyperSQL             | yes      |         | yes | Version 2.5.1                  | 67      | Relational              |
+| Label   | DBMS                 | Has Driver? | Has IS? | Compared? | Remarks                        | Ranking | DB Model                |
+| ------- | -------------------- | ----------- | ------- | --------- | ------------------------------ | ------- | ----------------------- |
+| sql2003 |                      |             |         | yes       | SQL:2003 Standard              |         |                         |
+| ora     | Oracle               | yes         | no      | no        |                                | 1       | Relational, Multi-model |
+| mysql   | MySQL                | yes         | yes     | no        | driver compatible with MariaDB | 2       | Relational, Multi-model |
+| mssql   | Microsoft SQL Server | yes         | yes     | yes       | Version 2019                   | 3       | Relational, Multi-model |
+| pg      | PostgreSQL           | yes         | yes     | yes       | Version 12.5                   | 4       | Relational, Multi-model |
+| sqlite  | SQLite               | yes         | no      | no        | Version 3.23.1                 | 9       | Relational              |
+| mariadb | MariaDB              | yes         | yes     | yes       | Version 10.3                   | 12      | Relational, Multi-model |
+| h2      | H2                   | yes         | yes     | yes       | Version 1.4.200                | 49      | Relational              |
+| hsqldb  | HyperSQL             |             | yes     | yes       | Version 2.5.1                  | 67      | Relational              |
 
 
 ## Most supported INFORMATION_SCHEMA tables/views
