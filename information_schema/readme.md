@@ -10,7 +10,7 @@ A comparison of the information schema implementation for various RDBMS engines.
    * Some RDBMS engines have additional tables not in the standard
    * Some RDBMS engines have additional columns not in the standard
  * https://en.wikipedia.org/wiki/Information_schema
- * "Ranking" and "DB Model" information was obtained from https://db-engines.com/en/ranking (as of January 2020)
+ * "Ranking" and "DB Model" information was obtained from https://db-engines.com/en/ranking (as of December 2020)
  * Compared the information_schema for the following databases:
    * [H2](https://h2database.com/html/main.html)
    * [HyperSQL](http://hsqldb.org/)
