@@ -39,7 +39,7 @@ type Domain struct {
 	DomainSchema  sql.NullString `json:"domainSchema"`
 	DomainName    sql.NullString `json:"domainName"`
 	DomainOwner   sql.NullString `json:"domainOwner"`
-	DomainType    sql.NullString `json:"domainType"`
+	DataType      sql.NullString `json:"dataType"`
 	DomainDefault sql.NullString `json:"domainDefault"`
 	Comment       sql.NullString `json:"comment"`
 }
@@ -69,7 +69,7 @@ func (db *m.DB) Domains(q, schema string) ([]Domain, error) {
 			&u.DomainSchema,
 			&u.DomainName,
 			&u.DomainOwner,
-			&u.DomainType,
+			&u.DataType,
 			&u.DomainDefault,
 			&u.Comment,
 		)
