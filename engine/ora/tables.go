@@ -50,5 +50,5 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
             AND tab.object_name = cmt.table_name )
 `
 	q2 := fmt.Sprintf(q, systemTables, "%$%")
-	return db.Tables(q, schema)
+	return db.Tables(q2, schema)
 }
