@@ -34,6 +34,7 @@ SELECT pg_catalog.current_database () AS catalog_name,
     LEFT OUTER JOIN pg_catalog.pg_namespace n
         ON ( n.oid = c.relnamespace )
     WHERE c.relkind IN ( 'v', 'r', 'f', 'm' )
+        -- AND c.relpersistence IN ( 'p' ) -- 'u' ??
         AND n.nspname <> 'information_schema'
         AND n.nspname !~ '^pg_'
         AND ( n.nspname = args.schema_name
