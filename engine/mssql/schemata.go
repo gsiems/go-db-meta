@@ -16,8 +16,9 @@ SELECT catalog_name,
         default_character_set_catalog,
         default_character_set_schema,
         default_character_set_name,
-        NULL AS comment
+        convert ( varchar ( 8000 ), xp.value ) AS comments
     FROM information_schema.schemata
+    OUTER APPLY ::fn_listextendedproperty ( 'MS_Description', 'schema', schema_name ) xp
     WHERE schema_name NOT IN ( 'INFORMATION_SCHEMA', 'sys' )
         AND substring ( schema_name, 1, 3 ) <> 'db_'
 `
