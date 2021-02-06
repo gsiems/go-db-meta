@@ -57,7 +57,6 @@ import (
 
 */
 
-
 // Column contains details for Columns
 type Column struct {
 	TableCatalog    sql.NullString `json:"tableCatalog"`
@@ -71,7 +70,7 @@ type Column struct {
 	DomainCatalog   sql.NullString `json:"domainCatalog"`
 	DomainSchema    sql.NullString `json:"domainSchema"`
 	DomainName      sql.NullString `json:"domainName"`
-	Comment sql.NullString `json:"comment"`
+	Comment         sql.NullString `json:"comment"`
 }
 
 // Columns returns a slice of Columns for the (tableSchema, tableName) parameters
