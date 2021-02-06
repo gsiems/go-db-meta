@@ -10,25 +10,25 @@ import (
 func Types(db *m.DB, schema string) ([]m.Type, error) {
 
 	q := `
-    WITH args AS (
-        SELECT $1 AS schema_name,
-    )
-    SELECT sys_context ( 'userenv', 'DB_NAME' ) AS type_catalog,
-            obj.owner AS type_schema,
-            obj.type_name AS type_name,
-            obj.owner AS type_owner,
-            NULL AS comment
-        FROM dba_types obj
-        CROSS JOIN args
-        WHERE ( obj.owner = args.schema_name
-                OR args.schema_name = '' )
-            AND obj.owner NOT IN (
-                    'APPQOSSYS', 'AWR_STAGE', 'CSMIG', 'CTXSYS', 'DBSNMP',
-                    'DIP', 'DMSYS', 'DSSYS', 'EXFSYS', 'LBACSYS', 'MDSYS',
-                    'OLAPSYS', 'ORACLE_OCM', 'ORDPLUGINS', 'ORDSYS', 'OUTLN',
-                    'PERFSTAT', 'PUBLIC', 'SQLTXPLAIN', 'SYS', 'SYSMAN',
-                    'SYSTEM', 'TRACESVR', 'TSMSYS', 'WMSYS', 'XDB' )
-            AND obj.owner NOT LIKE '%$%'
+WITH args AS (
+    SELECT $1 AS schema_name,
+)
+SELECT sys_context ( 'userenv', 'DB_NAME' ) AS type_catalog,
+        obj.owner AS type_schema,
+        obj.type_name AS type_name,
+        obj.owner AS type_owner,
+        NULL AS comment
+    FROM dba_types obj
+    CROSS JOIN args
+    WHERE ( obj.owner = args.schema_name
+            OR args.schema_name = '' )
+        AND obj.owner NOT IN (
+                'APPQOSSYS', 'AWR_STAGE', 'CSMIG', 'CTXSYS', 'DBSNMP',
+                'DIP', 'DMSYS', 'DSSYS', 'EXFSYS', 'LBACSYS', 'MDSYS',
+                'OLAPSYS', 'ORACLE_OCM', 'ORDPLUGINS', 'ORDSYS', 'OUTLN',
+                'PERFSTAT', 'PUBLIC', 'SQLTXPLAIN', 'SYS', 'SYSMAN',
+                'SYSTEM', 'TRACESVR', 'TSMSYS', 'WMSYS', 'XDB' )
+        AND obj.owner NOT LIKE '%$%'
 `
 	return db.Types(q, schema)
 }
