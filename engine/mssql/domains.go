@@ -36,6 +36,8 @@ SELECT dom.domain_catalog,
         NULL AS comments,
     FROM information_schema.domains dom
     CROSS JOIN args
+    WHERE dom.domain_schema NOT IN ( 'INFORMATION_SCHEMA', 'sys' )
+        AND substring ( dom.domain_schema, 1, 3 ) <> 'db_'
         AND ( dom.table_schema = args.schema_name
             OR args.schema_name = '' )
 `
