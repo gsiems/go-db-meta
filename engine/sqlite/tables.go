@@ -34,6 +34,6 @@ SELECT '%s' AS table_catalog,
 		return d, err
 	}
 
-	q2 = fmt.Sprintf(q, catName)
+	q2 := fmt.Sprintf(q, catName)
 	return db.Tables(q2, schema)
 }
