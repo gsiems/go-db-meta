@@ -58,18 +58,14 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
          ON ( col.owner = cmt.owner
             AND col.table_name = cmt.table_name
             AND col.column_name = cmt.column_name )
-    WHERE col.owner NOT IN (
-                'APPQOSSYS', 'AWR_STAGE', 'CSMIG', 'CTXSYS', 'DBSNMP',
-                'DIP', 'DMSYS', 'DSSYS', 'EXFSYS', 'LBACSYS', 'MDSYS',
-                'OLAPSYS', 'ORACLE_OCM', 'ORDPLUGINS', 'ORDSYS', 'OUTLN',
-                'PERFSTAT', 'PUBLIC', 'SQLTXPLAIN', 'SYS', 'SYSMAN',
-                'SYSTEM', 'TRACESVR', 'TSMSYS', 'WMSYS', 'XDB' )
-        AND col.owner NOT LIKE '%$%'
+    WHERE col.owner NOT IN ( %s )
+        AND col.owner NOT LIKE '%s'
         AND ( col.owner = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( col.table_name = args.table_name OR args.table_name = '' )
     ORDER BY col.owner,
         col.table_name
         col.column_id
 `
-	return db.Columns(q, tableSchema, tableName)
+	q2 := fmt.Sprintf(q, systemTables, "%$%")
+	return db.Columns(q2, tableSchema, tableName)
 }
