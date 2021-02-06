@@ -15,7 +15,7 @@ func Tables(db *m.DB, schema string) ([]m.Table, error) {
 
 	q := `
 SELECT '%s' AS table_catalog,
-        coalesce ( '', $1 ) AS table_schema,
+        coalesce ( $1, '' ) AS table_schema,
         name AS table_name,
         NULL AS table_owner,
         type AS table_type,
