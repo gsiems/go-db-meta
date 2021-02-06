@@ -13,22 +13,24 @@ func Tables(db *m.DB, schema string) ([]m.Table, error) {
 WITH args AS (
     SELECT $1 AS schema_name
 )
-SELECT tabs.table_catalog,
-        tabs.table_schema,
-        tabs.table_name,
-        tabs.table_schema AS table_owner,
-        tabs.table_type,
+SELECT tab.table_catalog,
+        tab.table_schema,
+        tab.table_name,
+        tab.table_schema AS table_owner,
+        tab.table_type,
         NULL AS row_count,
-        NULL AS comment,
+        convert ( varchar ( 8000 ), xp.value ) AS comments,
         v.view_definition
-    FROM information_schema.tables tabs
+    FROM information_schema.tables tab
     CROSS JOIN args
     LEFT JOIN information_schema.views v
-        ON ( v.table_catalog = tabs.table_catalog
-            AND v.table_schema = tabs.table_schema
-            AND v.table_name = tabs.table_name )
-    WHERE substring ( tabs.table_name, 1, 1 ) <> '#'
-        AND ( tabs.table_schema = args.schema_name
+        ON ( v.table_catalog = tab.table_catalog
+            AND v.table_schema = tab.table_schema
+            AND v.table_name = tab.table_name )
+    OUTER APPLY ::fn_listextendedproperty ( 'MS_Description', 'schema', tab.table_schema, 'table', tab.table_name ) xp
+    WHERE tab.table_schema NOT IN ( 'INFORMATION_SCHEMA', 'sys' )
+        AND substring ( tab.table_name, 1, 1 ) <> '#'
+        AND ( tab.table_schema = args.schema_name
             OR args.schema_name = '' )
 `
 	return db.Tables(q, schema)
