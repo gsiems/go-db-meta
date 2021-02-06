@@ -1,0 +1,9 @@
+package ora
+
+const systemTables = `
+    'APPQOSSYS', 'AWR_STAGE', 'CSMIG', 'CTXSYS', 'DBSNMP', 'DIP',
+    'DMSYS', 'DSSYS', 'EXFSYS', 'LBACSYS', 'MDSYS', 'OLAPSYS',
+    'ORACLE_OCM', 'ORDPLUGINS', 'ORDSYS', 'OUTLN', 'PERFSTAT',
+    'PUBLIC', 'SQLTXPLAIN', 'SYS', 'SYSMAN', 'SYSTEM', 'TRACESVR',
+    'TSMSYS', 'WMSYS', 'XDB'
+`
