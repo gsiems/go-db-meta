@@ -39,10 +39,14 @@ SELECT col.table_catalog,
         col.domain_catalog,
         col.domain_schema,
         col.domain_name,
-        NULL AS comments,
+        convert ( varchar ( 8000 ), xp.value ) AS comments
     FROM information_schema.columns col
     CROSS JOIN args
-    WHERE ( col.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
+    OUTER APPLY ::fn_listextendedproperty ( 'MS_Description', 'schema', col.table_schema, 'table', col.table_name, 'column', col.column_name ) xp
+    WHERE col.table_schema NOT IN ( 'INFORMATION_SCHEMA', 'sys' )
+        AND substring ( col.table_schema, 1, 3 ) <> 'db_'
+        AND substring ( col.table_name, 1, 1 ) <> '#'
+        AND ( col.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( col.table_name = args.table_name OR args.table_name = '' )
 
 `
