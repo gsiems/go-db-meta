@@ -21,13 +21,8 @@ tab AS (
         CROSS JOIN args
         WHERE ( obj.owner = args.schema_name
                 OR args.schema_name = '' )
-            AND obj.owner NOT IN (
-                    'APPQOSSYS', 'AWR_STAGE', 'CSMIG', 'CTXSYS', 'DBSNMP',
-                    'DIP', 'DMSYS', 'DSSYS', 'EXFSYS', 'LBACSYS', 'MDSYS',
-                    'OLAPSYS', 'ORACLE_OCM', 'ORDPLUGINS', 'ORDSYS', 'OUTLN',
-                    'PERFSTAT', 'PUBLIC', 'SQLTXPLAIN', 'SYS', 'SYSMAN',
-                    'SYSTEM', 'TRACESVR', 'TSMSYS', 'WMSYS', 'XDB' )
-            AND obj.owner NOT LIKE '%$%'
+            AND obj.owner NOT IN ( %s )
+            AND obj.owner NOT LIKE '%s'
             AND obj.object_type IN ( 'TABLE', 'VIEW', 'MATERIALIZED VIEW' )
         GROUP BY obj.owner,
             obj.object_name
@@ -54,5 +49,6 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         ON ( tab.owner = cmt.owner
             AND tab.object_name = cmt.table_name )
 `
+	q2 := fmt.Sprintf(q, systemTables, "%$%")
 	return db.Tables(q, schema)
 }
