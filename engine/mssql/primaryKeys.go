@@ -28,6 +28,7 @@ SELECT con.table_catalog,
             AND col.constraint_schema = con.constraint_schema
             AND col.constraint_name = con.constraint_name )
     WHERE con.table_schema NOT IN ( 'INFORMATION_SCHEMA', 'sys' )
+        AND substring ( con.table_schema, 1, 3 ) <> 'db_'
         AND substring ( con.table_name, 1, 1 ) <> '#'
         AND con.constraint_type = 'PRIMARY KEY'
         AND ( con.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
