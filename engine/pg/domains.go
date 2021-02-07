@@ -30,5 +30,5 @@ SELECT current_database() AS domain_catalog,
             OR args.schema_name = '' )
 `
 
-	return db.Domains(q, schema )
+	return db.Domains(q, schema)
 }

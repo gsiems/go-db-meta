@@ -10,7 +10,7 @@ import (
 func CurrentCatalog(db *m.DB) (m.Catalog, error) {
 
 	var d m.Catalog
-	d.CatalogName = 'def'
+	d.CatalogName = "def"
 
 	d.DefaultCharacterSetName, err = defaultCharacterSetName(db)
 	if err != nil {
@@ -25,14 +25,14 @@ func CurrentCatalog(db *m.DB) (m.Catalog, error) {
 	return d, nil
 }
 
-func defaultCharacterSetName (db *m.DB) (sql.NullString, error) {
+func defaultCharacterSetName(db *m.DB) (sql.NullString, error) {
 	return db.QSingleString(`
 SELECT variable_value
     FROM information_schema.global_variables
     WHERE variable_name = 'CHARACTER_SET_SERVER'`)
 }
 
-func dbmsVersion (db *m.DB) (sql.NullString, error) {
+func dbmsVersion(db *m.DB) (sql.NullString, error) {
 	return db.QSingleString(`
 SELECT variable_value
     FROM information_schema.global_variables

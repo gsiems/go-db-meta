@@ -12,7 +12,7 @@ import (
 // results of executing the query
 func Schemata(db *m.DB, nclude, xclude string) ([]m.Schema, error) {
 
-// TODO: Is there a way to query Oracle for the list of system accounts?
+	// TODO: Is there a way to query Oracle for the list of system accounts?
 
 	q := `
 WITH cs AS (
@@ -52,7 +52,7 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS catalog_name,
 	// loop the results and populate comments
 	commented, err := commentedSchemas(db)
 
-	for i, _ := range d {
+	for i := range d {
 		schema := d[i].SchemaName.String
 		_, ok := commented[schema]
 		if ok {

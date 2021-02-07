@@ -9,7 +9,7 @@ import (
 // executing the query
 func Tables(db *m.DB, schema string) ([]m.Table, error) {
 
-// NB that mariadb doesn't appear to support CTEs
+	// NB that mariadb doesn't appear to support CTEs
 	q := `
 SELECT t.table_catalog,
         t.table_schema,

@@ -27,14 +27,14 @@ func CurrentCatalog(db *m.DB) (d m.Catalog, err error) {
 	return d, err
 }
 
-func catalogName (db *m.DB) (sql.NullString, error) {
+func catalogName(db *m.DB) (sql.NullString, error) {
 	return db.QSingleString("SELECT file FROM pragma_database_list WHERE seq = 0")
 }
 
-func defaultCharacterSetName (db *m.DB) (sql.NullString, error) {
+func defaultCharacterSetName(db *m.DB) (sql.NullString, error) {
 	return db.QSingleString("SELECT encoding FROM pragma_encoding")
 }
 
-func dbmsVersion (db *m.DB) (sql.NullString, error) {
+func dbmsVersion(db *m.DB) (sql.NullString, error) {
 	return db.QSingleString("SELECT 'SQLite ' || sqlite_version ()")
 }

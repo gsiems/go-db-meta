@@ -48,8 +48,6 @@ SELECT '%s' AS table_catalog,
 	return db.Columns(q2, tableSchema, tableName)
 }
 
-
-
 /*
 type pto struct {
 	cid        sql.NullInt32

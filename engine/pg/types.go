@@ -44,8 +44,6 @@ SELECT current_database () AS user_defined_type_catalog,
 	return db.Types(q, schema)
 }
 
-
-
 /*
 Columns for composite types
 

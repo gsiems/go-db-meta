@@ -33,7 +33,6 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS type_catalog,
 	return db.Types(q, schema)
 }
 
-
 /*
 
 | OWNER | TABLE_NAME     | COLUMN_NAME        | DATA_TYPE | DATA_LENGTH | COLUMN_ID |

@@ -8,5 +8,5 @@ import (
 func Domains(db *m.DB, schema string) ([]m.Domain, error) {
 
 	q := ``
-	return db.Domains(q, schema )
+	return db.Domains(q, schema)
 }
