@@ -11,15 +11,17 @@ import (
 // of executing the query
 func PrimaryKeys(db *m.DB, tableSchema, tableName string) ([]m.PrimaryKey, error) {
 
+	var d []m.PrimaryKey
+
 	// Primary key names may show in the .schema command output but not,
 	// apparently in the output of any pragma queries.
 
 	q := `
 SELECT '%s' AS table_catalog,
-        x.table_schema,
-        x.table_name,
+        pk_col.table_schema,
+        pk_col.table_name,
         '' AS constraint_name,
-        group_concat ( x.column_name, ', ' ) AS constraint_columns,
+        group_concat ( pk_col.column_name, ', ' ) AS constraint_columns,
         'Enabled' AS status,
         '' AS comments
     FROM (
@@ -34,13 +36,14 @@ SELECT '%s' AS table_catalog,
                         coalesce ( $2, '' ) AS table_name
                 ) AS args
             WHERE m.type = 'table'
-                AND m.tbl_name NOT LIKE 'sqlite_%'
+                AND m.tbl_name NOT LIKE '%s'
                 AND ( args.table_name = '' OR args.table_name = m.name )
                 AND col.pk > 0
             ORDER BY m.name,
                 col.pk
-        ) AS x
-    GROUP BY x.table_name
+        ) AS pk_col
+    GROUP BY pk_col.table_schema,
+        pk_col.table_name
 `
 
 	catName, err := catalogName(db)
@@ -48,6 +51,6 @@ SELECT '%s' AS table_catalog,
 		return d, err
 	}
 
-	q2 := fmt.Sprintf(q, catName)
+	q2 := fmt.Sprintf(q, catName, "sqlite_%")
 	return db.PrimaryKeys(q2, tableSchema, tableName)
 }
