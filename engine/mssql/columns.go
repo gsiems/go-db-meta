@@ -48,7 +48,6 @@ SELECT col.table_catalog,
         AND substring ( col.table_name, 1, 1 ) <> '#'
         AND ( col.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( col.table_name = args.table_name OR args.table_name = '' )
-
 `
 	return db.Columns(q, tableSchema, tableName)
 }
