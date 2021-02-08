@@ -35,7 +35,7 @@ SELECT '%s' AS table_catalog,
                 coalesce ( $2, '' ) AS table_name
         ) AS args
     WHERE m.type IN ( 'table', 'view' )
-        AND m.tbl_name NOT LIKE 'sqlite_%'
+        AND m.tbl_name NOT LIKE '%s'
         AND ( args.table_name = '' OR args.table_name = m.name )
 `
 
@@ -44,7 +44,7 @@ SELECT '%s' AS table_catalog,
 		return d, err
 	}
 
-	q2 := fmt.Sprintf(q, catName)
+	q2 := fmt.Sprintf(q, catName, "sqlite_%")
 	return db.Columns(q2, tableSchema, tableName)
 }
 
