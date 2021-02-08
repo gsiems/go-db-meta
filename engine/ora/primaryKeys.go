@@ -19,11 +19,11 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         con.table_name,
         con.constraint_name,
         listagg ( col.column_name, ', ' ) WITHIN GROUP (
-            ORDER BY position ) AS constraint_columns,
+            ORDER BY col.position ) AS constraint_columns,
         CASE con.status
             WHEN 'ENABLED' THEN 'Enabled'
             WHEN 'DISABLED' THEN 'Disabled'
-            ELSE status
+            ELSE con.status
             END AS status,
         NULL AS comments
     FROM all_constraints con
