@@ -1,4 +1,4 @@
-package null
+package mariadb
 
 import (
 	m "github.com/gsiems/go-db-meta/model"
