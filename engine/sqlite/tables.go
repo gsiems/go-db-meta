@@ -26,7 +26,7 @@ SELECT '%s' AS table_catalog,
             END AS view_definition
     FROM sqlite_master
     WHERE type IN ( 'table', 'view' )
-        AND tbl_name NOT LIKE 'sqlite_%'
+        AND tbl_name NOT LIKE '%s'
 `
 
 	catName, err := catalogName(db)
@@ -34,6 +34,6 @@ SELECT '%s' AS table_catalog,
 		return d, err
 	}
 
-	q2 := fmt.Sprintf(q, catName)
+	q2 := fmt.Sprintf(q, catName, "sqlite_%")
 	return db.Tables(q2, schema)
 }
