@@ -1,4 +1,4 @@
-package null
+package mssql
 
 import (
 	m "github.com/gsiems/go-db-meta/model"
@@ -33,6 +33,10 @@ SELECT con.table_catalog,
         AND con.constraint_type = 'PRIMARY KEY'
         AND ( con.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( con.table_name = args.table_name OR args.table_name = '' )
+   GROUP BY con.table_catalog,
+        con.table_schema,
+        con.table_name,
+        con.constraint_name
 `
 	return db.PrimaryKeys(q, tableSchema, tableName)
 }
