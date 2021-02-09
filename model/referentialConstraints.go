@@ -70,8 +70,9 @@ type ReferentialConstraint struct {
 	Comment sql.NullString `json:"comment"`
 }
 
-// Constraints returns a slice of Referential Constraints for the (schema) parameter
-func (db *m.DB) ReferentialConstraints(q, schema string) ([]ReferentialConstraint, error) {
+// ReferentialConstraints returns a slice of Referential Constraints
+// for the (tableSchema, tableName) parameters
+func (db *m.DB) ReferentialConstraints(q, tableSchema, tableName string) ([]ReferentialConstraint, error) {
 
 	var d []ReferentialConstraint
 
@@ -79,7 +80,7 @@ func (db *m.DB) ReferentialConstraints(q, schema string) ([]ReferentialConstrain
 		return d, errors.New("No query provided to ReferentialConstraints")
 	}
 
-	rows, err := db.Query(q, schema)
+	rows, err := db.Query(q, tableSchema, tableName)
 	if err != nil {
 		return d, err
 	}
