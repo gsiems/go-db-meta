@@ -33,7 +33,7 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
             AND col.table_name = con.table_name
             AND col.constraint_name = con.constraint_name )
     WHERE con.constraint_type = 'P'
-        AND con.owner NOT IN (%s )
+        AND con.owner NOT IN ( %s )
         AND con.owner NOT LIKE '%s'
         AND ( col.owner = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( col.table_name = args.table_name OR args.table_name = '' )
