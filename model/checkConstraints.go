@@ -44,7 +44,7 @@ func (db *m.DB) CheckConstraints(q, tableSchema, tableName string) ([]CheckConst
 			&u.TableColumns,
 			&u.ConstraintName,
 			&u.CheckClause,
-            &u.Status,
+			&u.Status,
 			&u.Comment,
 		)
 		if err != nil {

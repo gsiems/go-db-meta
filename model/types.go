@@ -48,7 +48,7 @@ type Type struct {
 	TypeName    sql.NullString `json:"typeName"`
 	TypeOwner   sql.NullString `json:"typeOwner"`
 	//DataType    sql.NullString `json:"dataType"`
-	Comment     sql.NullString `json:"comment"`
+	Comment sql.NullString `json:"comment"`
 }
 
 // Types returns a slice of Types for the (schema) parameter
