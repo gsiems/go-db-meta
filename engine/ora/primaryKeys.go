@@ -35,8 +35,8 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
     WHERE con.constraint_type = 'P'
         AND con.owner NOT IN ( %s )
         AND con.owner NOT LIKE '%s'
-        AND ( col.owner = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
-        AND ( col.table_name = args.table_name OR args.table_name = '' )
+        AND ( col.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
+        AND ( col.table_name = args.table_name OR args.table_name IS NULL )
 `
 	q2 := fmt.Sprintf(q, systemTables, "%$%")
 	return db.PrimaryKeys(q2, tableSchema, tableName)

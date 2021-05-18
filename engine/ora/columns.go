@@ -60,8 +60,8 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
             AND col.column_name = cmt.column_name )
     WHERE col.owner NOT IN ( %s )
         AND col.owner NOT LIKE '%s'
-        AND ( col.owner = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
-        AND ( col.table_name = args.table_name OR args.table_name = '' )
+        AND ( col.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
+        AND ( col.table_name = args.table_name OR args.table_name IS NULL )
     ORDER BY col.owner,
         col.table_name
         col.column_id

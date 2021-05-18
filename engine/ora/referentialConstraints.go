@@ -54,10 +54,10 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
             AND rcon.constraint_name = rcol.constraint_name
             AND rcon.table_name = rcol.table_name )
     WHERE con.constraint_type = 'R'
-        AND ( ( ( con.owner = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
-                AND ( con.table_name = args.table_name OR args.table_name = '' ) )
-            OR ( ( rcon.owner = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
-                AND ( rcon.table_name = args.table_name OR args.table_name = '' ) ) )
+        AND ( ( ( con.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
+                AND ( con.table_name = args.table_name OR args.table_name IS NULL ) )
+            OR ( ( rcon.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
+                AND ( rcon.table_name = args.table_name OR args.table_name IS NULL ) ) )
 `
 	return db.ReferentialConstraints(q, tableSchema, tableName)
 }
