@@ -11,7 +11,7 @@ func Types(db *m.DB, schema string) ([]m.Type, error) {
 
 	q := `
 WITH args AS (
-    SELECT '' AS schema_name
+    SELECT $1 AS schema_name
 )
 SELECT current_database () AS user_defined_type_catalog,
         n.nspname AS user_defined_type_schema,
