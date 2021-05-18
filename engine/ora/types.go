@@ -21,7 +21,7 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS type_catalog,
     FROM dba_types obj
     CROSS JOIN args
     WHERE ( obj.owner = args.schema_name
-            OR args.schema_name = '' )
+            OR args.schema_name IS NULL )
         AND obj.owner NOT IN (
                 'APPQOSSYS', 'AWR_STAGE', 'CSMIG', 'CTXSYS', 'DBSNMP',
                 'DIP', 'DMSYS', 'DSSYS', 'EXFSYS', 'LBACSYS', 'MDSYS',
