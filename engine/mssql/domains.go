@@ -11,7 +11,7 @@ func Domains(db *m.DB, schema string) ([]m.Domain, error) {
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name
+    SELECT coalesce ( $1, '' ) AS schema_name
 )
 SELECT dom.domain_catalog,
         dom.domain_schema,
