@@ -30,12 +30,7 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS catalog_name,
         NULL AS comment
     FROM dba_users usr
     CROSS JOIN cs
-    WHERE usr.username NOT IN (
-            'APPQOSSYS', 'AWR_STAGE', 'CSMIG', 'CTXSYS', 'DBSNMP',
-            'DIP', 'DMSYS', 'DSSYS', 'EXFSYS', 'LBACSYS', 'MDSYS',
-            'OLAPSYS', 'ORACLE_OCM', 'ORDPLUGINS', 'ORDSYS', 'OUTLN',
-            'PERFSTAT', 'PUBLIC', 'SQLTXPLAIN', 'SYS', 'SYSMAN',
-            'SYSTEM', 'TRACESVR', 'TSMSYS', 'WMSYS', 'XDB' )
+    WHERE usr.username NOT IN ( %s )
         AND usr.username NOT LIKE '%$%'
         AND EXISTS (
             SELECT 1
@@ -44,6 +39,9 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS catalog_name,
                     AND obj.object_type IN ( 'TABLE', 'VIEW', 'MATERIALIZED VIEW' ) )
 
 `
+	q2 := fmt.Sprintf(q, systemTables, "%$%")
+	return db.Tables(q2, schema)
+
 	d, err := db.Schemata(q, nclude, xclude)
 	if err != nil {
 		return d, err
