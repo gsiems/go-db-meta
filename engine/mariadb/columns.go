@@ -41,8 +41,8 @@ SELECT col.table_catalog,
         col.column_comment AS comments
     FROM information_schema.columns col
     CROSS JOIN (
-        SELECT $1 AS schema_name,
-                $2 AS table_name
+            SELECT coalesce ( $1, '' ) AS schema_name,
+                    coalesce ( $2, '' ) AS table_name
     ) AS args
     WHERE ( col.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( col.table_name = args.table_name OR args.table_name = '' )
