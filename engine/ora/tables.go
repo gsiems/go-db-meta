@@ -21,7 +21,7 @@ tab AS (
         FROM dba_objects obj
         CROSS JOIN args
         WHERE ( obj.owner = args.schema_name
-                OR args.schema_name = '' )
+                OR args.schema_name IS NULL )
             AND obj.owner NOT IN ( %s )
             AND obj.owner NOT LIKE '%s'
             AND obj.object_type IN ( 'TABLE', 'VIEW', 'MATERIALIZED VIEW' )
