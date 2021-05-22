@@ -11,8 +11,8 @@ func PrimaryKeys(db *m.DB, tableSchema, tableName string) ([]m.PrimaryKey, error
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name,
-            $2 AS table_name
+    SELECT coalesce ( $1, '' ) AS schema_name,
+            coalesce ( $2, '' ) AS table_name
 )
 SELECT current_database () AS table_catalog,
         nr.nspname AS table_schema,

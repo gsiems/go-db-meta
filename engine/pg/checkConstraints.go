@@ -11,8 +11,8 @@ func CheckConstraints(db *m.DB, tableSchema, tableName string) ([]m.CheckConstra
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name,
-            $2 AS table_name
+    SELECT coalesce ( $1, '' ) AS schema_name,
+            coalesce ( $2, '' ) AS table_name
 )
 SELECT current_database() AS table_catalog,
         n.nspname AS table_schema,
@@ -38,3 +38,13 @@ SELECT current_database() AS table_catalog,
 `
 	return db.CheckConstraints(q, tableSchema, tableName)
 }
+
+/*
+SELECT conname -- pg_get_constraintdef(oid), *
+FROM   pg_constraint c
+JOIN   pg_attribute  a ON a.attrelid = c.conrelid     -- !
+                      AND a.attnum   = ANY(c.conkey)  -- !
+WHERE  c.conrelid = 'hypothetical_table'::regclass
+AND    c.contype = 'c'  -- c = check constraint
+AND    a.attname = 'some_col';
+*/

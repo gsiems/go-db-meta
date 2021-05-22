@@ -11,7 +11,7 @@ func Tables(db *m.DB, schema string) ([]m.Table, error) {
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name
+    SELECT coalesce ( $1, '' ) AS schema_name
 )
 SELECT pg_catalog.current_database () AS catalog_name,
         n.nspname AS table_schema,

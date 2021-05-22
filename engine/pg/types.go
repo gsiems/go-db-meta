@@ -11,7 +11,7 @@ func Types(db *m.DB, schema string) ([]m.Type, error) {
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name
+    SELECT coalesce ( $1, '' ) AS schema_name
 )
 SELECT current_database () AS user_defined_type_catalog,
         n.nspname AS user_defined_type_schema,
@@ -48,8 +48,8 @@ SELECT current_database () AS user_defined_type_catalog,
 Columns for composite types
 
 WITH args AS (
-    SELECT $1 AS schema_name,
-            $2 AS table_name
+    SELECT coalesce ( $1, '' ) AS schema_name,
+            coalesce ( $2, '' ) AS table_name
 )
 SELECT current_database() AS type_catalog,
         n.nspname AS type_schema,

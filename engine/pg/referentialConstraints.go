@@ -12,8 +12,8 @@ func ReferentialConstraints(db *m.DB, tableSchema, tableName string) ([]m.Refere
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name,
-            $2 AS table_name
+    SELECT coalesce ( $1, '' ) AS schema_name,
+            coalesce ( $2, '' ) AS table_name
 ),
 con_rules AS (
     SELECT 'f' AS con_type,
