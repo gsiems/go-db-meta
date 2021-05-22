@@ -11,7 +11,8 @@ func Tables(db *m.DB, schema string) ([]m.Table, error) {
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name,
+    SELECT $1 AS schema_name
+        FROM dual
 ),
 tab AS (
     SELECT obj.owner,

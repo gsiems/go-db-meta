@@ -13,6 +13,7 @@ func PrimaryKeys(db *m.DB, tableSchema, tableName string) ([]m.PrimaryKey, error
 WITH args AS (
     SELECT $1 AS schema_name,
             $2 AS table_name
+        FROM dual
 )
 SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         con.owner AS table_schema,

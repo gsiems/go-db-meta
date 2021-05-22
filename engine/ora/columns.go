@@ -13,6 +13,7 @@ func Columns(db *m.DB, tableSchema, tableName string) ([]m.Column, error) {
 WITH args AS (
     SELECT $1 AS schema_name,
             $2 AS table_name
+        FROM dual
 )
 SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         col.owner AS table_schema,

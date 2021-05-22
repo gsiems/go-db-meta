@@ -11,7 +11,8 @@ func Types(db *m.DB, schema string) ([]m.Type, error) {
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name,
+    SELECT $1 AS schema_name
+        FROM dual
 )
 SELECT sys_context ( 'userenv', 'DB_NAME' ) AS type_catalog,
         obj.owner AS type_schema,
