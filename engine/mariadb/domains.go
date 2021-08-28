@@ -6,6 +6,7 @@ import (
 
 // Domains returns an empty set of domains as MariaDB does not appear to support domains
 func Domains(db *m.DB, schema string) ([]m.Domain, error) {
-	var d []m.Domain
-	return d, nil
+
+	q := ``
+	return db.Domains(q, schema)
 }
