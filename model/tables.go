@@ -52,7 +52,7 @@ func (db *m.DB) Tables(q, tableSchema string) ([]Table, error) {
 	var d []Table
 
 	if q == "" {
-		return d, errors.New("No query provided to Tables")
+		return d, nil
 	}
 
 	rows, err := db.Query(q, tableSchema)

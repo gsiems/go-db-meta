@@ -19,7 +19,7 @@ func (db *m.DB) CurrentCatalog(q) (Catalog, error) {
 	var d Catalog
 
 	if q == "" {
-		return d, errors.New("No query provided to CurrentCatalog")
+		return d, nil
 	}
 
 	rows, err := db.Query(q)

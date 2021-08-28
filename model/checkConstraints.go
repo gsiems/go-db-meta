@@ -23,7 +23,7 @@ func (db *m.DB) CheckConstraints(q, tableSchema, tableName string) ([]CheckConst
 	var d []CheckConstraint
 
 	if q == "" {
-		return d, errors.New("No query provided to CheckConstraints")
+		return d, nil
 	}
 
 	rows, err := db.Query(q, tableSchema, tableName)

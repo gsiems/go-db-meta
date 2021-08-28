@@ -22,7 +22,7 @@ func (db *m.DB) PrimaryKeys(q, tableSchema, tableName string) ([]PrimaryKey, err
 	var d []PrimaryKey
 
 	if q == "" {
-		return d, errors.New("No query provided to PrimaryKeys")
+		return d, nil
 	}
 
 	rows, err := db.Query(q, tableSchema, tableName)

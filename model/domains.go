@@ -50,7 +50,7 @@ func (db *m.DB) Domains(q, schema string) ([]Domain, error) {
 	var d []Domain
 
 	if q == "" {
-		return d, errors.New("No query provided to Domains")
+		return d, nil
 	}
 
 	rows, err := db.Query(q, schema)

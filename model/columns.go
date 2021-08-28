@@ -79,7 +79,7 @@ func (db *m.DB) Columns(q, tableSchema, tableName string) ([]Column, error) {
 	var d []Column
 
 	if q == "" {
-		return d, errors.New("No query provided to Columns")
+		return d, nil
 	}
 
 	rows, err := db.Query(q, tableSchema, tableName)

@@ -57,7 +57,7 @@ func (db *m.DB) Types(q, tableSchema string) ([]Type, error) {
 	var d []Type
 
 	if q == "" {
-		return d, errors.New("No query provided to Types")
+		return d, nil
 	}
 
 	rows, err := db.Query(q, tableSchema)

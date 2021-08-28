@@ -77,7 +77,7 @@ func (db *m.DB) ReferentialConstraints(q, tableSchema, tableName string) ([]Refe
 	var d []ReferentialConstraint
 
 	if q == "" {
-		return d, errors.New("No query provided to ReferentialConstraints")
+		return d, nil
 	}
 
 	rows, err := db.Query(q, tableSchema, tableName)

@@ -37,7 +37,7 @@ func (db *m.DB) Schemata(q, nclude, xclude string) ([]Schema, error) {
 	var d []Schema
 
 	if q == "" {
-		return d, errors.New("No query provided to Schemata")
+		return d, nil
 	}
 
 	included := csvToMap(nclude)
