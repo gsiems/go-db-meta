@@ -15,8 +15,8 @@ SELECT tab.table_catalog,
         tab.table_name,
         con.constraint_name,
         group_concat( col.column_name
-            order by col.ordinal_position
-            separator ', ' ) AS constraint_columns,
+            ORDER BY col.ordinal_position
+            SEPARATOR ', ' ) AS constraint_columns,
         NULL AS status, -- 'Enabled'??
         NULL AS comment
     FROM information_schema.tables tab
@@ -32,7 +32,7 @@ SELECT tab.table_catalog,
             AND con.constraint_name = col.constraint_name
             AND con.table_name = col.table_name )
     WHERE con.constraint_type = 'PRIMARY KEY'
-        AND tab.table_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema' )
+        AND tab.table_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema', 'sys' )
         AND ( tab.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( tab.table_name = args.table_name OR args.table_name = '' )
     GROUP BY tab.table_catalog,

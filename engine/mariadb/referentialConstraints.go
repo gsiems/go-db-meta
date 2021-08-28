@@ -41,8 +41,8 @@ SELECT col.table_catalog,
         SELECT coalesce ( $1, '' ) AS schema_name,
                 coalesce ( $2, '' ) AS table_name
         ) AS args
-    WHERE con.constraint_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema' )
-        AND con.unique_constraint_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema' )
+    WHERE con.constraint_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema', 'sys' )
+        AND con.unique_constraint_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema', 'sys' )
         AND ( ( ( col.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
                 AND ( col.table_name = args.table_name OR args.table_name = '' ) )
             OR ( ( col.referenced_table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )

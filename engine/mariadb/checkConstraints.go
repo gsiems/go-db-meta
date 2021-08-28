@@ -27,7 +27,7 @@ SELECT con.constraint_catalog AS table_catalog,
         SELECT coalesce ( $1, '' ) AS schema_name,
                 coalesce ( $2, '' ) AS table_name
         ) AS args
-    WHERE tab.table_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema' )
+    WHERE tab.table_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema', 'sys' )
         AND ( tab.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( tab.table_name = args.table_name OR args.table_name = '' )
 `

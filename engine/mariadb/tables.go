@@ -26,7 +26,7 @@ SELECT t.table_catalog,
     LEFT JOIN information_schema.views v
         ON ( v.table_schema = t.table_schema
             AND v.table_name = t.table_name )
-    WHERE t.table_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema' )
+    WHERE t.table_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema', 'sys' )
         AND ( t.table_schema = args.schema_name
             OR args.schema_name = '' )
 `

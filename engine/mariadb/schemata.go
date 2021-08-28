@@ -20,7 +20,7 @@ SELECT catalog_name,
         -- sql_path
         NULL AS comment
     FROM information_schema.schemata
-    WHERE schema_name NOT IN ( 'information_schema', 'mysql', 'performance_schema' )
+    WHERE schema_name NOT IN ( 'information_schema', 'mysql', 'performance_schema', 'sys' )
 `
 
 	return db.Schemata(q, nclude, xclude)

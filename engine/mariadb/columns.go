@@ -44,7 +44,8 @@ SELECT col.table_catalog,
             SELECT coalesce ( $1, '' ) AS schema_name,
                     coalesce ( $2, '' ) AS table_name
     ) AS args
-    WHERE ( col.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
+    WHERE col.table_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema', 'sys' )
+        AND ( col.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( col.table_name = args.table_name OR args.table_name = '' )
 `
 	return db.Columns(q, tableSchema, tableName)
