@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"strings"
 )
 
@@ -32,4 +33,14 @@ func (db *m.DB) QSingleString(q string) (sql.NullString, error) {
 		err = rows.Scan(&v)
 	}
 	return v, err
+}
+
+// Coalesce picks the first non-empty string from a list
+func Coalesce(s ...string) string {
+	for _, v := range s {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
 }
