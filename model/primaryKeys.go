@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql"
-	"errors"
 )
 
 // PrimaryKey contains primary key columns for tables
