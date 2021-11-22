@@ -40,7 +40,6 @@ func (db *DB) CheckConstraints(q, tableSchema, tableName string) ([]CheckConstra
 		err = rows.Scan(&u.TableCatalog,
 			&u.TableSchema,
 			&u.TableName,
-			&u.TableColumns,
 			&u.ConstraintName,
 			&u.CheckClause,
 			&u.Status,
