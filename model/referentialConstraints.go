@@ -71,7 +71,7 @@ type ReferentialConstraint struct {
 
 // ReferentialConstraints returns a slice of Referential Constraints
 // for the (tableSchema, tableName) parameters
-func (db *m.DB) ReferentialConstraints(q, tableSchema, tableName string) ([]ReferentialConstraint, error) {
+func (db *DB) ReferentialConstraints(q, tableSchema, tableName string) ([]ReferentialConstraint, error) {
 
 	var d []ReferentialConstraint
 

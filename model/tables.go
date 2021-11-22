@@ -46,7 +46,7 @@ type Table struct {
 }
 
 // Tables returns a slice of Tables for the (schema) parameter
-func (db *m.DB) Tables(q, tableSchema string) ([]Table, error) {
+func (db *DB) Tables(q, tableSchema string) ([]Table, error) {
 
 	var d []Table
 

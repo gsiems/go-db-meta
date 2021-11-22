@@ -19,7 +19,7 @@ type Index struct {
 }
 
 // Indexes returns a slice of Indexes for the (tableSchema, tableName) parameters
-func (db *m.DB) Indexes(q, tableSchema, tableName string) ([]Index, error) {
+func (db *DB) Indexes(q, tableSchema, tableName string) ([]Index, error) {
 
 	var d []Index
 

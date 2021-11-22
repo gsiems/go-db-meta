@@ -51,7 +51,7 @@ type Type struct {
 }
 
 // Types returns a slice of Types for the (schema) parameter
-func (db *m.DB) Types(q, tableSchema string) ([]Type, error) {
+func (db *DB) Types(q, tableSchema string) ([]Type, error) {
 
 	var d []Type
 

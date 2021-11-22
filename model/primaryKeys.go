@@ -16,7 +16,7 @@ type PrimaryKey struct {
 }
 
 // PrimaryKeys returns a slice of primary keys for the (tableSchema, tableName) parameters
-func (db *m.DB) PrimaryKeys(q, tableSchema, tableName string) ([]PrimaryKey, error) {
+func (db *DB) PrimaryKeys(q, tableSchema, tableName string) ([]PrimaryKey, error) {
 
 	var d []PrimaryKey
 

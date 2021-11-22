@@ -44,7 +44,7 @@ type Domain struct {
 }
 
 // Domains returns a slice of Domains for the (schema) parameter
-func (db *m.DB) Domains(q, schema string) ([]Domain, error) {
+func (db *DB) Domains(q, schema string) ([]Domain, error) {
 
 	var d []Domain
 

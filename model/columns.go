@@ -73,7 +73,7 @@ type Column struct {
 }
 
 // Columns returns a slice of Columns for the (tableSchema, tableName) parameters
-func (db *m.DB) Columns(q, tableSchema, tableName string) ([]Column, error) {
+func (db *DB) Columns(q, tableSchema, tableName string) ([]Column, error) {
 
 	var d []Column
 

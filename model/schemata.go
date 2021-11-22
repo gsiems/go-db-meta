@@ -31,7 +31,7 @@ type Schema struct {
 }
 
 // Schemata returns a slice of Schemas, optionally filtered on the (nclude, xclude) parameters
-func (db *m.DB) Schemata(q, nclude, xclude string) ([]Schema, error) {
+func (db *DB) Schemata(q, nclude, xclude string) ([]Schema, error) {
 
 	var d []Schema
 
