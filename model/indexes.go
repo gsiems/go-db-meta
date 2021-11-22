@@ -39,7 +39,6 @@ func (db *DB) Indexes(q, tableSchema, tableName string) ([]Index, error) {
 
 	for rows.Next() {
 		var u Index
-		var cols string
 		err = rows.Scan(&u.IndexCatalog,
 			&u.IndexSchema,
 			&u.IndexName,
