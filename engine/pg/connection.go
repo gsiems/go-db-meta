@@ -19,9 +19,9 @@ func OpenDB(c *m.ConnectInfo) (*m.DB, error) {
 		osUser = usr.Username
 	}
 
-	c.Username = util.Coalesce(c.UserName, osUser)
-	c.Host = util.Coalesce(c.Host, "localhost")
-	c.Port = util.Coalesce(c.Port, "5432")
+	c.Username = m.Coalesce(c.Username, osUser)
+	c.Host = m.Coalesce(c.Host, "localhost")
+	c.Port = m.Coalesce(c.Port, "5432")
 
 	dsn := fmt.Sprintf("user=%s dbname=%s host=%s port=%s", c.Username, c.DbName, c.Host, c.Port)
 
