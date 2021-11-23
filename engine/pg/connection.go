@@ -7,7 +7,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	m "github.com/gsiems/db-dictionary/model"
+	m "github.com/gsiems/go-db-meta/model"
 )
 
 // OpenDB opens a database connection and returns a DB reference.
