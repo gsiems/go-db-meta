@@ -5,7 +5,7 @@ import (
 )
 
 // Schemata doesn't do much as sqlite doesn't appear to have schemas
-func Schemata(db *m.DB, nclude, xclude string) (r []m.Schema, err error) {
+func Schemata(db *m.DB, nclude, xclude string) (d []m.Schema, err error) {
 
 	var u m.Schema
 
@@ -23,5 +23,7 @@ func Schemata(db *m.DB, nclude, xclude string) (r []m.Schema, err error) {
 
 	u.SchemaName = "default"
 
-	r := append(r, u)
+	d := append(d, u)
+
+	return d, err
 }
