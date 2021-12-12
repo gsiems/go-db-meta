@@ -1,7 +1,6 @@
 package sqlite
 
 import (
-	"database/sql"
 	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
