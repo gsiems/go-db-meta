@@ -20,8 +20,8 @@ SELECT '%s' AS table_catalog,
         cols.cid AS ordinal_position,
         cols."type" AS data_type,
         CASE
-            WHEN cols."notnull" = 1 THEN 'N'
-            ELSE 'Y'
+            WHEN cols."notnull" = 1 THEN 'NO'
+            ELSE 'YES'
             END AS is_nullable,
         NULL AS column_default,
         NULL AS domain_catalog,

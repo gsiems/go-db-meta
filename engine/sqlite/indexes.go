@@ -23,8 +23,8 @@ SELECT '%s' AS index_catalog,
         con.table_schema,
         con.table_name,
         CASE
-            WHEN max ( con.origin ) IN ( 'pk', 'u' ) THEN 'Y'
-            ELSE 'N'
+            WHEN max ( con.origin ) IN ( 'pk', 'u' ) THEN 'YES'
+            ELSE 'NO'
             END AS is_unique,
         -- status
         '' AS comments

@@ -23,8 +23,8 @@ SELECT current_database () AS index_catalog,
         nr.nspname AS table_schema,
         c.relname AS table_name,
         CASE
-            WHEN i.indisunique THEN 'Y'
-            ELSE 'N'
+            WHEN i.indisunique THEN 'YES'
+            ELSE 'NO'
             END AS is_unique,
         d.description AS comments
     FROM pg_catalog.pg_class c

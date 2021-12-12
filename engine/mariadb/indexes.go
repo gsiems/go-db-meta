@@ -21,8 +21,8 @@ SELECT stat.table_catalog AS index_catalog,
         stat.table_schema,
         stat.table_name,
         CASE stat.non_unique
-            WHEN 1 THEN 'N'
-            ELSE 'Y'
+            WHEN 1 THEN 'NO'
+            ELSE 'YES'
             END AS is_unique,
         index_comment AS comment
     FROM information_schema.statistics stat

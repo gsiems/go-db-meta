@@ -25,8 +25,8 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS index_catalog,
         idx.table_owner AS table_schema,
         idx.table_name,
         CASE idx.uniqueness
-            WHEN 'UNIQUE' THEN 'Y'
-            ELSE 'N'
+            WHEN 'UNIQUE' THEN 'YES'
+            ELSE 'NO'
             END AS is_unique,
         --col.descend,
         --ie.column_expression,
