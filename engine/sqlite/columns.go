@@ -18,12 +18,12 @@ SELECT '%s' AS table_catalog,
         m.name AS table_name,
         cols.name AS column_name,
         cols.cid AS ordinal_position,
-        NULL AS column_default,
+        cols."type" AS data_type,
         CASE
             WHEN cols."notnull" = 1 THEN 'N'
             ELSE 'Y'
             END AS is_nullable,
-        cols."type" AS data_type,
+        NULL AS column_default,
         NULL AS domain_catalog,
         NULL AS domain_schema,
         NULL AS domain_name,
