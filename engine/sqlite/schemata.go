@@ -21,9 +21,6 @@ func Schemata(db *m.DB, nclude, xclude string) (d []m.Schema, err error) {
 	}
 	u.DefaultCharacterSetName = charSetName
 
-	u.SchemaName.String = "default"
-	u.SchemaName.Valid = true
-
 	d = append(d, u)
 
 	return d, err
