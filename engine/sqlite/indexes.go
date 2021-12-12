@@ -11,6 +11,8 @@ import (
 // of executing the query
 func Indexes(db *m.DB, tableSchema, tableName string) ([]m.Index, error) {
 
+	var d []m.Index
+
 	q := `
 SELECT '%s' AS index_catalog,
         con.table_schema AS index_schema,
