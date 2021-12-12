@@ -11,19 +11,19 @@ func Schemata(db *m.DB, nclude, xclude string) (d []m.Schema, err error) {
 
 	catName, err := catalogName(db)
 	if err != nil {
-		return r, err
+		return d, err
 	}
 	u.CatalogName = catName
 
 	charSetName, err := defaultCharacterSetName(db)
 	if err != nil {
-		return r, err
+		return d, err
 	}
 	u.DefaultCharacterSetName = charSetName
 
 	u.SchemaName = "default"
 
-	d := append(d, u)
+	d = append(d, u)
 
 	return d, err
 }
