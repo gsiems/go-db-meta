@@ -18,6 +18,7 @@ SELECT '%s' AS table_catalog,
         m.name AS table_name,
         cols.name AS column_name,
         cols.cid AS ordinal_position,
+        NULL AS column_default,
         CASE
             WHEN cols."notnull" = 1 THEN 'N'
             ELSE 'Y'
