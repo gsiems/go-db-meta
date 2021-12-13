@@ -37,8 +37,8 @@ SELECT current_database () AS index_catalog,
         ON ( d.objoid = i.indexrelid )
     INNER JOIN pg_namespace nr
         ON ( nr.oid = c.relnamespace )
-    WHERE n.nspname <> 'information_schema'
-        AND n.nspname !~ '^pg_'
+    WHERE nr.nspname <> 'information_schema'
+        AND nr.nspname !~ '^pg_'
         AND ( nr.nspname = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( c.relname = args.table_name OR args.table_name = '' )
 `
