@@ -17,7 +17,7 @@ SELECT tab.table_catalog,
         tab.table_schema,
         tab.table_name,
         tab.table_schema AS table_owner,
-        tab.table_type,
+        upper ( tab.table_type ) AS table_type,
         NULL AS row_count,
         convert ( varchar ( 8000 ), xp.value ) AS comments,
         v.view_definition

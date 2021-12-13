@@ -18,7 +18,7 @@ SELECT '%s' AS table_catalog,
         coalesce ( $1, '' ) AS table_schema,
         name AS table_name,
         NULL AS table_owner,
-        type AS table_type,
+        upper ( type ) AS table_type,
         NULL AS row_count,
         NULL AS comment,
         CASE
