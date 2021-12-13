@@ -151,6 +151,7 @@ SELECT --con.oid,
         'YES' AS is_enforced,
         d.description AS comments
     FROM referential_constraints con
+    CROSS JOIN args
     INNER JOIN table_constraints tab
         ON ( con.constraint_catalog = tab.constraint_catalog
             AND con.constraint_schema = tab.constraint_schema
