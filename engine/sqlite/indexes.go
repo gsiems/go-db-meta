@@ -45,8 +45,8 @@ SELECT '%s' AS index_catalog,
             JOIN pragma_index_list ( tab.name ) AS idx
             JOIN pragma_index_info ( idx.name ) AS col
             WHERE tab.type = 'table'
-                AND m.tbl_name NOT LIKE '%s'
-                AND ( args.table_name = '' OR args.table_name = m.name )
+                AND tab.name NOT LIKE '%s'
+                AND ( args.table_name = '' OR args.table_name = tab.name )
             ORDER BY tab.name,
                 idx.name,
                 col.seqno
