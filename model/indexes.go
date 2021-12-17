@@ -52,6 +52,8 @@ func (db *DB) Indexes(q, tableSchema, tableName string) ([]Index, error) {
 		)
 		if err != nil {
 			return d, err
+		} else {
+			d = append(d, u)
 		}
 	}
 
