@@ -56,6 +56,8 @@ SELECT current_database () AS table_catalog,
     WHERE c.relkind IN ( 'v', 'r', 'f', 'p', 'm' )
         AND a.attnum > 0
         AND NOT a.attisdropped
+        AND n.nspname <> 'information_schema'
+        AND n.nspname !~ '^pg_'
         AND ( n.nspname = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( c.relname = args.table_name OR args.table_name = '' )
     ORDER BY n.nspname,
