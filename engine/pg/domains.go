@@ -26,6 +26,8 @@ SELECT current_database() AS domain_catalog,
         ON n.oid = t.typnamespace
     WHERE t.typtype = 'd'
         AND pg_catalog.pg_type_is_visible ( t.oid )
+        AND n.nspname <> 'information_schema'
+        AND n.nspname !~ '^pg_'
         AND ( n.nspname = args.schema_name
             OR args.schema_name = '' )
 `
