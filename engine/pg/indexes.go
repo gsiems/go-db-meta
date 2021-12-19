@@ -18,7 +18,7 @@ idx AS (
    SELECT current_database () AS index_catalog,
            nr.nspname AS index_schema,
            c2.relname AS index_name,
-           '' AS index_type,
+           trim ( split_part ( regexp_replace ( pg_catalog.pg_get_indexdef ( i.indexrelid, 0, true ), '^[^\(]+USING ', '' ), '(', 1 ) ) AS index_type,
            regexp_replace ( pg_catalog.pg_get_indexdef ( i.indexrelid, 0, true ), '^[^\(]+', '' ) AS index_columns,
            current_database () AS table_catalog,
            nr.nspname AS table_schema,
