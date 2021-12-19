@@ -33,6 +33,8 @@ SELECT current_database () AS table_catalog,
         ON ( d.objoid = c.oid )
     WHERE r.relkind = 'r'
         AND c.contype = 'u'
+        AND nr.nspname <> 'information_schema'
+        AND nr.nspname !~ '^pg_'
         AND ( nr.nspname = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
         AND ( r.relname = args.table_name OR args.table_name = '' )
     ORDER BY r.relname,
