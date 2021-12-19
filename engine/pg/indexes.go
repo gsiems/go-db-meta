@@ -46,12 +46,15 @@ idx AS (
 SELECT index_catalog,
         index_schema,
         index_name,
+        index_type,
         CASE
             WHEN substr ( index_columns, length ( index_columns ), 1 ) = ')'
                 THEN substr ( index_columns, 2, length ( index_columns ) - 2 )
             ELSE index_columns
             END AS index_columns,
         table_catalog,
+        table_schema,
+        table_name,
         is_unique,
         comments
     FROM idx
