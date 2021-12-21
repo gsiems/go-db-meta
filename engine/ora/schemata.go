@@ -17,7 +17,7 @@ func Schemata(db *m.DB, nclude, xclude string) ([]m.Schema, error) {
 	q := `
 WITH cs AS (
     SELECT value$ AS cs_name
-      FROM props$
+      FROM sys.props$
       WHERE name = 'NLS_CHARACTERSET'
 )
 SELECT sys_context ( 'userenv', 'DB_NAME' ) AS catalog_name,
@@ -27,22 +27,24 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS catalog_name,
         NULL AS DefaultCharacterSetSchema,
         cs.cs_name AS DefaultCharacterSetName,
         -- sys_context ( 'userenv', 'NLS_SORT' ) AS default_collation_name,
-        NULL AS comment
+        NULL AS comments
     FROM dba_users usr
     CROSS JOIN cs
     WHERE usr.username NOT IN ( %s )
-        AND usr.username NOT LIKE '%$%'
         AND EXISTS (
             SELECT 1
                 FROM dba_objects obj
                 WHERE obj.owner = usr.username
                     AND obj.object_type IN ( 'TABLE', 'VIEW', 'MATERIALIZED VIEW' ) )
-
 `
-	q2 := fmt.Sprintf(q, systemTables, "%$%")
-	return db.Tables(q2, schema)
 
-	d, err := db.Schemata(q, nclude, xclude)
+	q2 := fmt.Sprintf(q, systemTables)
+	//return db.Tables(q2, nclude)
+
+//fmt.Println(q2)
+
+
+	d, err := db.Schemata(q2, nclude, xclude)
 	if err != nil {
 		return d, err
 	}
@@ -72,7 +74,7 @@ func commentedSchemas(db *m.DB) (map[string]bool, error) {
             AND object_name = 'SCHEMA_COMMENT'
 `
 
-	rows, err := db.Query(q, tableSchema)
+	rows, err := db.Query(q)
 	if err != nil {
 		return d, err
 	}
@@ -83,7 +85,7 @@ func commentedSchemas(db *m.DB) (map[string]bool, error) {
 	}()
 
 	for rows.Next() {
-		var u sqlNullString
+		var u sql.NullString
 		err = rows.Scan(&u)
 		if err != nil {
 			return d, err

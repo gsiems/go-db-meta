@@ -1,6 +1,8 @@
 package ora
 
 import (
+	"fmt"
+
 	m "github.com/gsiems/go-db-meta/model"
 )
 
@@ -12,8 +14,8 @@ func ReferentialConstraints(db *m.DB, tableSchema, tableName string) ([]m.Refere
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name,
-            $2 AS table_name
+    SELECT :1 AS schema_name,
+            :2 AS table_name
         FROM dual
 )
 SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
@@ -55,10 +57,28 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
             AND rcon.constraint_name = rcol.constraint_name
             AND rcon.table_name = rcol.table_name )
     WHERE con.constraint_type = 'R'
+        AND con.owner NOT IN ( %s )
+        AND rcon.owner NOT IN ( %s )
         AND ( ( ( con.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
                 AND ( con.table_name = args.table_name OR args.table_name IS NULL ) )
             OR ( ( rcon.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
                 AND ( rcon.table_name = args.table_name OR args.table_name IS NULL ) ) )
+    GROUP BY sys_context ( 'userenv', 'DB_NAME' ),
+        con.owner,
+        con.table_name,
+        con.constraint_name,
+        sys_context ( 'userenv', 'DB_NAME' ),
+        rcon.owner,
+        rcon.table_name,
+        rcon.constraint_name,
+        con.delete_rule,
+        CASE con.status
+            WHEN 'ENABLED' THEN 'YES'
+            WHEN 'DISABLED' THEN 'NO'
+            ELSE con.status
+            END
 `
-	return db.ReferentialConstraints(q, tableSchema, tableName)
+
+	q2 := fmt.Sprintf(q, systemTables, systemTables)
+	return db.ReferentialConstraints(q2, tableSchema, tableName)
 }

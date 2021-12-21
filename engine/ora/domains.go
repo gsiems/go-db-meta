@@ -5,7 +5,8 @@ import (
 )
 
 // Domains returns an empty set of domains as Oracle does not support domains
-func Domains(db *m.DB, tableSchema, tableName string) ([]m.Domain, error) {
+func Domains(db *m.DB, schema string) ([]m.Domain, error) {
+
 	var d []m.Domain
 	return d, nil
 }

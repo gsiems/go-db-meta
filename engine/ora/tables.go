@@ -1,6 +1,8 @@
 package ora
 
 import (
+	"fmt"
+
 	m "github.com/gsiems/go-db-meta/model"
 )
 
@@ -11,7 +13,7 @@ func Tables(db *m.DB, schema string) ([]m.Table, error) {
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name
+    SELECT :1 AS schema_name
         FROM dual
 ),
 tab AS (
@@ -23,14 +25,13 @@ tab AS (
         WHERE ( obj.owner = args.schema_name
                 OR args.schema_name IS NULL )
             AND obj.owner NOT IN ( %s )
-            AND obj.owner NOT LIKE '%s'
             AND obj.object_type IN ( 'TABLE', 'VIEW', 'MATERIALIZED VIEW' )
         GROUP BY obj.owner,
             obj.object_name
 )
 SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         tab.owner AS table_schema,
-        tab.object_name AS table_name
+        tab.object_name AS table_name,
         tab.owner AS table_owner,
         tab.object_type AS table_type,
         dt.num_rows AS row_count,
@@ -50,6 +51,8 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         ON ( tab.owner = cmt.owner
             AND tab.object_name = cmt.table_name )
 `
-	q2 := fmt.Sprintf(q, systemTables, "%$%")
+
+	q2 := fmt.Sprintf(q, systemTables)
+
 	return db.Tables(q2, schema)
 }

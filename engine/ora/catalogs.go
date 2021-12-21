@@ -10,7 +10,7 @@ import (
 // CurrentCatalog defines the query for obtaining information about the
 // currently connected catalog (database) and returns the results of
 // executing the query
-func CurrentCatalog(db *m.DB) (m.Catalog, error) {
+func CurrentCatalog(db *m.DB) (d m.Catalog, err error) {
 
 	d.CatalogName, err = catalogName(db)
 	if err != nil {
@@ -38,6 +38,7 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS catalog_name
 
 func defaultCharacterSetName(db *m.DB) (sql.NullString, error) {
 
+	var err error
 	var d sql.NullString
 	var nlsLanguage sql.NullString
 	var nlsTerritory sql.NullString
@@ -80,7 +81,7 @@ SELECT coalesce ( s.value, d.value ) AS value
 		return d, err
 	}
 
-	d.String = fmt.Sprintf("%s_%s.%s", nlsLanguage, nlsTerritory, nlsCharacterset)
+	d.String = fmt.Sprintf("%s_%s.%s", nlsLanguage.String, nlsTerritory.String, nlsCharacterset.String)
 
 	return d, nil
 

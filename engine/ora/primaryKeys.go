@@ -1,6 +1,8 @@
 package ora
 
 import (
+	"fmt"
+
 	m "github.com/gsiems/go-db-meta/model"
 )
 
@@ -11,8 +13,8 @@ func PrimaryKeys(db *m.DB, tableSchema, tableName string) ([]m.PrimaryKey, error
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name,
-            $2 AS table_name
+    SELECT :1 AS schema_name,
+            :2 AS table_name
         FROM dual
 )
 SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
@@ -35,10 +37,18 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
             AND col.constraint_name = con.constraint_name )
     WHERE con.constraint_type = 'P'
         AND con.owner NOT IN ( %s )
-        AND con.owner NOT LIKE '%s'
         AND ( col.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
         AND ( col.table_name = args.table_name OR args.table_name IS NULL )
+    GROUP BY sys_context ( 'userenv', 'DB_NAME' ),
+        con.owner,
+        con.table_name,
+        con.constraint_name,
+        CASE con.status
+            WHEN 'ENABLED' THEN 'Enabled'
+            WHEN 'DISABLED' THEN 'Disabled'
+            ELSE con.status
+            END
 `
-	q2 := fmt.Sprintf(q, systemTables, "%$%")
+	q2 := fmt.Sprintf(q, systemTables)
 	return db.PrimaryKeys(q2, tableSchema, tableName)
 }

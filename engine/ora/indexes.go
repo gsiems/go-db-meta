@@ -1,6 +1,8 @@
 package ora
 
 import (
+	"fmt"
+
 	m "github.com/gsiems/go-db-meta/model"
 )
 
@@ -11,8 +13,8 @@ func Indexes(db *m.DB, tableSchema, tableName string) ([]m.Index, error) {
 
 	q := `
 WITH args AS (
-    SELECT $1 AS schema_name,
-            $2 AS table_name
+    SELECT :1 AS schema_name,
+            :2 AS table_name
         FROM dual
 )
 SELECT sys_context ( 'userenv', 'DB_NAME' ) AS index_catalog,
@@ -48,10 +50,20 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS index_catalog,
     --        AND ie.table_name = col.table_name
     --        AND ie.column_position = col.column_position )
     WHERE idx.table_owner NOT IN ( %s )
-        AND idx.table_owner NOT LIKE '%s'
         AND ( idx.table_owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
         AND ( idx.table_name = args.table_name OR args.table_name IS NULL )
+    GROUP BY sys_context ( 'userenv', 'DB_NAME' ),
+        idx.owner,
+        idx.index_name,
+        idx.index_type,
+        sys_context ( 'userenv', 'DB_NAME' ),
+        idx.table_owner,
+        idx.table_name,
+        CASE idx.uniqueness
+            WHEN 'UNIQUE' THEN 'YES'
+            ELSE 'NO'
+            END
 `
-	q2 := fmt.Sprintf(q, systemTables, "%$%")
+	q2 := fmt.Sprintf(q, systemTables)
 	return db.Indexes(q2, tableSchema, tableName)
 }
