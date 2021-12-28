@@ -6,7 +6,7 @@ import (
 	m "github.com/gsiems/go-db-meta/model"
 )
 
-type Querier interface {
+type Engine interface {
 	BindConnection(db *sql.DB) (m.DB, error)
 	//CloseDB()
 	CurrentCatalog(q string) (m.Catalog, error)
