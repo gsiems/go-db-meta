@@ -7,6 +7,7 @@ import (
 )
 
 type Engine interface {
+	Name () (string)
 	BindConnection(db *sql.DB) (m.DB, error)
 	//CloseDB()
 	CurrentCatalog(q string) (m.Catalog, error)
