@@ -1,7 +1,7 @@
 package ora
 
 import (
-"fmt"
+	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
