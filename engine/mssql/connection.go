@@ -4,12 +4,12 @@ import (
 	"database/sql"
 	"os/user"
 
-	e "github.com/gsiems/go-db-meta/engine"
+	//e "github.com/gsiems/go-db-meta/engine"
 	m "github.com/gsiems/go-db-meta/model"
 )
 
 // OpenDB opens a database connection and returns a DB reference.
-func OpenDB(c *e.ConnectInfo) (*m.DB, error) {
+func OpenDB(c *m.ConnectInfo) (*m.DB, error) {
 
 	var osUser string
 	usr, err := user.Current()

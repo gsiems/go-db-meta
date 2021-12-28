@@ -1,5 +1,5 @@
 package engine
-
+/*
 import (
 	"database/sql"
 
@@ -8,8 +8,8 @@ import (
 
 type Engine interface {
 	Name () (string)
-	OpenDB(c *ConnectInfo) (*m.DB, error)
-	BindConnection(db *sql.DB) (m.DB, error)
+	OpenDB(c *ConnectInfo) (*DB, error)
+	BindConnection(db *sql.DB) (*DB, error)
 	//CloseDB()
 	CurrentCatalog(q string) (m.Catalog, error)
 	CheckConstraints(q, tableSchema, tableName string) ([]m.CheckConstraint, error)
@@ -35,3 +35,8 @@ type ConnectInfo struct {
 	Password string
 	File     string
 }
+
+type DB struct {
+	Connection *m.DB
+}
+*/
