@@ -8,6 +8,7 @@ import (
 
 type Engine interface {
 	Name () (string)
+	OpenDB(c *ConnectInfo) (*m.DB, error)
 	BindConnection(db *sql.DB) (m.DB, error)
 	//CloseDB()
 	CurrentCatalog(q string) (m.Catalog, error)
@@ -24,4 +25,13 @@ type Engine interface {
 	Tables(q, tableSchema string) ([]m.Table, error)
 	Types(q, tableSchema string) ([]m.Type, error)
 	UniqueConstraints(q, tableSchema, tableName string) ([]m.UniqueConstraint, error)
+}
+
+type ConnectInfo struct {
+	Host     string
+	Port     string
+	DbName   string
+	Username string
+	Password string
+	File     string
 }
