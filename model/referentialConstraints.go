@@ -4,6 +4,75 @@ import (
 	"database/sql"
 )
 
+// ReferentialConstraint contains details for referential constraints
+type ReferentialConstraint struct {
+	TableCatalog      sql.NullString `json:"tableCatalog"`
+	TableSchema       sql.NullString `json:"tableSchema"`
+	TableName         sql.NullString `json:"tableName"`
+	TableColumns      sql.NullString `json:"tableColumns"`
+	ConstraintName    sql.NullString `json:"constraintName"`
+	RefTableCatalog   sql.NullString `json:"refTableCatalog"`
+	RefTableSchema    sql.NullString `json:"refTableSchema"`
+	RefTableName      sql.NullString `json:"refTableName"`
+	RefTableColumns   sql.NullString `json:"refTableColumns"`
+	RefConstraintName sql.NullString `json:"refConstraintName"`
+	MatchOption       sql.NullString `json:"matchOption"`
+	UpdateRule        sql.NullString `json:"updateRule"`
+	DeleteRule        sql.NullString `json:"deleteRule"`
+	IsEnforced        sql.NullString `json:"isEnforced"`
+	//is_deferrable
+	//initially_deferred
+	Comment sql.NullString `json:"comment"`
+}
+
+// ReferentialConstraints returns a slice of Referential Constraints
+// for the (schemaName, tableName) parameters
+func ReferentialConstraints(db *sql.DB, q, schemaName, tableName string) ([]ReferentialConstraint, error) {
+
+	var d []ReferentialConstraint
+
+	if q == "" {
+		return d, nil
+	}
+
+	rows, err := db.Query(q, schemaName, tableName)
+	if err != nil {
+		return d, err
+	}
+	defer func() {
+		if cerr := rows.Close(); cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
+
+	for rows.Next() {
+		var u ReferentialConstraint
+		err = rows.Scan(&u.TableCatalog,
+			&u.TableSchema,
+			&u.TableName,
+			&u.TableColumns,
+			&u.ConstraintName,
+			&u.RefTableCatalog,
+			&u.RefTableSchema,
+			&u.RefTableName,
+			&u.RefTableColumns,
+			&u.RefConstraintName,
+			&u.MatchOption,
+			&u.UpdateRule,
+			&u.DeleteRule,
+			&u.IsEnforced,
+			&u.Comment,
+		)
+		if err != nil {
+			return d, err
+		} else {
+			d = append(d, u)
+		}
+	}
+
+	return d, err
+}
+
 /*
 
 | Table Name                            | Column Name                       | Position | Matches                                 | Qty |
@@ -47,72 +116,3 @@ import (
 | KEY_COLUMN_USAGE                      | REFERENCED_TABLE_SCHEMA           | (null)   | mariadb                                 | 1   |
 
 */
-
-// ReferentialConstraint contains details for referential constraints
-type ReferentialConstraint struct {
-	TableCatalog      sql.NullString `json:"tableCatalog"`
-	TableSchema       sql.NullString `json:"tableSchema"`
-	TableName         sql.NullString `json:"tableName"`
-	TableColumns      sql.NullString `json:"tableColumns"`
-	ConstraintName    sql.NullString `json:"constraintName"`
-	RefTableCatalog   sql.NullString `json:"refTableCatalog"`
-	RefTableSchema    sql.NullString `json:"refTableSchema"`
-	RefTableName      sql.NullString `json:"refTableName"`
-	RefTableColumns   sql.NullString `json:"refTableColumns"`
-	RefConstraintName sql.NullString `json:"refConstraintName"`
-	MatchOption       sql.NullString `json:"matchOption"`
-	UpdateRule        sql.NullString `json:"updateRule"`
-	DeleteRule        sql.NullString `json:"deleteRule"`
-	IsEnforced        sql.NullString `json:"isEnforced"`
-	//is_deferrable
-	//initially_deferred
-	Comment sql.NullString `json:"comment"`
-}
-
-// ReferentialConstraints returns a slice of Referential Constraints
-// for the (tableSchema, tableName) parameters
-func (db *DB) ReferentialConstraints(q, tableSchema, tableName string) ([]ReferentialConstraint, error) {
-
-	var d []ReferentialConstraint
-
-	if q == "" {
-		return d, nil
-	}
-
-	rows, err := db.Query(q, tableSchema, tableName)
-	if err != nil {
-		return d, err
-	}
-	defer func() {
-		if cerr := rows.Close(); cerr != nil && err == nil {
-			err = cerr
-		}
-	}()
-
-	for rows.Next() {
-		var u ReferentialConstraint
-		err = rows.Scan(&u.TableCatalog,
-			&u.TableSchema,
-			&u.TableName,
-			&u.TableColumns,
-			&u.ConstraintName,
-			&u.RefTableCatalog,
-			&u.RefTableSchema,
-			&u.RefTableName,
-			&u.RefTableColumns,
-			&u.RefConstraintName,
-			&u.MatchOption,
-			&u.UpdateRule,
-			&u.DeleteRule,
-			&u.IsEnforced,
-			&u.Comment,
-		)
-		if err != nil {
-			return d, err
-		} else {
-			d = append(d, u)
-		}
-	}
-
-	return d, err
-}

@@ -17,7 +17,7 @@ type CheckConstraint struct {
 
 // CheckConstraints returns a slice of Check Constraints for the
 // (tableSchema, tableName) parameters
-func (db *DB) CheckConstraints(q, tableSchema, tableName string) ([]CheckConstraint, error) {
+func CheckConstraints(db *sql.DB, q, tableSchema, tableName string) ([]CheckConstraint, error) {
 
 	var d []CheckConstraint
 

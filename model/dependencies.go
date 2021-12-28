@@ -20,7 +20,7 @@ type Dependency struct {
 
 // Dependencies returns a slice of Dependecies for the
 // (objectSchema, objectName) parameters
-func (db *DB) Dependencies(q, objectSchema, objectName string) ([]Dependency, error) {
+func Dependencies(db *sql.DB, q, objectSchema, objectName string) ([]Dependency, error) {
 
 	var d []Dependency
 

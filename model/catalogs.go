@@ -13,7 +13,7 @@ type Catalog struct {
 }
 
 // CurrentCatalog returns the current catalog
-func (db *DB) CurrentCatalog(q string) (Catalog, error) {
+func CurrentCatalog(db *sql.DB, q string) (Catalog, error) {
 
 	var d Catalog
 

@@ -4,21 +4,6 @@ import (
 	"database/sql"
 )
 
-/*
-
-| Table Name                            | Column Name                       | Position | Matches                                 | Qty |
-| ------------------------------------- | --------------------------------- | -------- | --------------------------------------- | --- |
-| SCHEMATA                              | CATALOG_NAME                      | 1        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| SCHEMATA                              | SCHEMA_NAME                       | 2        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| SCHEMATA                              | SCHEMA_OWNER                      | 3        | sql2003, pg, mssql, hsqldb, h2          | 5   |
-| SCHEMATA                              | DEFAULT_CHARACTER_SET_CATALOG     | 4        | sql2003, pg, mssql, hsqldb              | 4   |
-| SCHEMATA                              | DEFAULT_CHARACTER_SET_SCHEMA      | 5        | sql2003, pg, mssql, hsqldb              | 4   |
-| SCHEMATA                              | DEFAULT_CHARACTER_SET_NAME        | 6        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| SCHEMATA                              | SQL_PATH                          | 7        | sql2003, pg, mariadb, hsqldb            | 4   |
-| SCHEMATA                              | DEFAULT_COLLATION_NAME            |          | mariadb, h2                             | 2   |
-
-*/
-
 // Schema contains details for Schemata
 type Schema struct {
 	CatalogName                sql.NullString `json:"catalogName"`
@@ -31,7 +16,7 @@ type Schema struct {
 }
 
 // Schemata returns a slice of Schemas, optionally filtered on the (nclude, xclude) parameters
-func (db *DB) Schemata(q, nclude, xclude string) ([]Schema, error) {
+func Schemata(db *sql.DB, q, nclude, xclude string) ([]Schema, error) {
 
 	var d []Schema
 
@@ -86,3 +71,18 @@ func (db *DB) Schemata(q, nclude, xclude string) ([]Schema, error) {
 
 	return d, err
 }
+
+/*
+
+| Table Name                            | Column Name                       | Position | Matches                                 | Qty |
+| ------------------------------------- | --------------------------------- | -------- | --------------------------------------- | --- |
+| SCHEMATA                              | CATALOG_NAME                      | 1        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| SCHEMATA                              | SCHEMA_NAME                       | 2        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| SCHEMATA                              | SCHEMA_OWNER                      | 3        | sql2003, pg, mssql, hsqldb, h2          | 5   |
+| SCHEMATA                              | DEFAULT_CHARACTER_SET_CATALOG     | 4        | sql2003, pg, mssql, hsqldb              | 4   |
+| SCHEMATA                              | DEFAULT_CHARACTER_SET_SCHEMA      | 5        | sql2003, pg, mssql, hsqldb              | 4   |
+| SCHEMATA                              | DEFAULT_CHARACTER_SET_NAME        | 6        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| SCHEMATA                              | SQL_PATH                          | 7        | sql2003, pg, mariadb, hsqldb            | 4   |
+| SCHEMATA                              | DEFAULT_COLLATION_NAME            |          | mariadb, h2                             | 2   |
+
+*/

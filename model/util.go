@@ -16,7 +16,7 @@ func csvToMap(s string) map[string]int {
 	return l
 }
 
-func (db *DB) QSingleString(q string) (sql.NullString, error) {
+func QSingleString(db *sql.DB, q string) (sql.NullString, error) {
 
 	var v sql.NullString
 	rows, err := db.Query(q)

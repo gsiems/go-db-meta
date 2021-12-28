@@ -4,35 +4,6 @@ import (
 	"database/sql"
 )
 
-/*
-
-| Table Name                            | Column Name                       | Position | Matches                                 | Qty |
-| ------------------------------------- | --------------------------------- | -------- | --------------------------------------- | --- |
-| TABLES                                | TABLE_CATALOG                     | 1        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| TABLES                                | TABLE_SCHEMA                      | 2        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| TABLES                                | TABLE_NAME                        | 3        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| TABLES                                | TABLE_TYPE                        | 4        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| TABLES                                | SELF_REFERENCING_COLUMN_NAME      | 5        | sql2003, pg, hsqldb                     | 3   |
-| TABLES                                | REFERENCE_GENERATION              | 6        | sql2003, pg, hsqldb                     | 3   |
-| TABLES                                | USER_DEFINED_TYPE_CATALOG         | 7        | sql2003, pg, hsqldb                     | 3   |
-| TABLES                                | USER_DEFINED_TYPE_SCHEMA          | 8        | sql2003, pg, hsqldb                     | 3   |
-| TABLES                                | USER_DEFINED_TYPE_NAME            | 9        | sql2003, pg, hsqldb                     | 3   |
-| TABLES                                | IS_INSERTABLE_INTO                | 10       | sql2003, pg, hsqldb                     | 3   |
-| TABLES                                | IS_TYPED                          | 11       | sql2003, pg, hsqldb                     | 3   |
-| TABLES                                | COMMIT_ACTION                     | 12       | sql2003, pg, hsqldb                     | 3   |
-| VIEWS                                 | TABLE_CATALOG                     | 1        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| VIEWS                                 | TABLE_SCHEMA                      | 2        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| VIEWS                                 | TABLE_NAME                        | 3        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| VIEWS                                 | VIEW_DEFINITION                   | 4        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| VIEWS                                 | CHECK_OPTION                      | 5        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| VIEWS                                 | IS_UPDATABLE                      | 6        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
-| VIEWS                                 | INSERTABLE_INTO                   | 7        | sql2003, hsqldb                         | 2   |
-| VIEWS                                 | IS_TRIGGER_DELETABLE              |          | pg, hsqldb                              | 2   |
-| VIEWS                                 | IS_TRIGGER_INSERTABLE_INTO        |          | pg, hsqldb                              | 2   |
-| VIEWS                                 | IS_TRIGGER_UPDATABLE              |          | pg, hsqldb                              | 2   |
-
-*/
-
 // Table contains details for tables and views
 type Table struct {
 	TableCatalog   sql.NullString `json:"tableCatalog"`
@@ -46,7 +17,7 @@ type Table struct {
 }
 
 // Tables returns a slice of Tables for the (schema) parameter
-func (db *DB) Tables(q, tableSchema string) ([]Table, error) {
+func Tables(db *sql.DB, q, tableSchema string) ([]Table, error) {
 
 	var d []Table
 
@@ -84,3 +55,32 @@ func (db *DB) Tables(q, tableSchema string) ([]Table, error) {
 
 	return d, err
 }
+
+/*
+
+| Table Name                            | Column Name                       | Position | Matches                                 | Qty |
+| ------------------------------------- | --------------------------------- | -------- | --------------------------------------- | --- |
+| TABLES                                | TABLE_CATALOG                     | 1        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| TABLES                                | TABLE_SCHEMA                      | 2        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| TABLES                                | TABLE_NAME                        | 3        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| TABLES                                | TABLE_TYPE                        | 4        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| TABLES                                | SELF_REFERENCING_COLUMN_NAME      | 5        | sql2003, pg, hsqldb                     | 3   |
+| TABLES                                | REFERENCE_GENERATION              | 6        | sql2003, pg, hsqldb                     | 3   |
+| TABLES                                | USER_DEFINED_TYPE_CATALOG         | 7        | sql2003, pg, hsqldb                     | 3   |
+| TABLES                                | USER_DEFINED_TYPE_SCHEMA          | 8        | sql2003, pg, hsqldb                     | 3   |
+| TABLES                                | USER_DEFINED_TYPE_NAME            | 9        | sql2003, pg, hsqldb                     | 3   |
+| TABLES                                | IS_INSERTABLE_INTO                | 10       | sql2003, pg, hsqldb                     | 3   |
+| TABLES                                | IS_TYPED                          | 11       | sql2003, pg, hsqldb                     | 3   |
+| TABLES                                | COMMIT_ACTION                     | 12       | sql2003, pg, hsqldb                     | 3   |
+| VIEWS                                 | TABLE_CATALOG                     | 1        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| VIEWS                                 | TABLE_SCHEMA                      | 2        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| VIEWS                                 | TABLE_NAME                        | 3        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| VIEWS                                 | VIEW_DEFINITION                   | 4        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| VIEWS                                 | CHECK_OPTION                      | 5        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| VIEWS                                 | IS_UPDATABLE                      | 6        | sql2003, pg, mssql, mariadb, hsqldb, h2 | 6   |
+| VIEWS                                 | INSERTABLE_INTO                   | 7        | sql2003, hsqldb                         | 2   |
+| VIEWS                                 | IS_TRIGGER_DELETABLE              |          | pg, hsqldb                              | 2   |
+| VIEWS                                 | IS_TRIGGER_INSERTABLE_INTO        |          | pg, hsqldb                              | 2   |
+| VIEWS                                 | IS_TRIGGER_UPDATABLE              |          | pg, hsqldb                              | 2   |
+
+*/

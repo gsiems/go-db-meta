@@ -15,8 +15,8 @@ type PrimaryKey struct {
 	Comment           sql.NullString `json:"comment"`
 }
 
-// PrimaryKeys returns a slice of primary keys for the (tableSchema, tableName) parameters
-func (db *DB) PrimaryKeys(q, tableSchema, tableName string) ([]PrimaryKey, error) {
+// PrimaryKeys returns a slice of primary keys for the (schemaName, tableName) parameters
+func PrimaryKeys(db *sql.DB, q, schemaName, tableName string) ([]PrimaryKey, error) {
 
 	var d []PrimaryKey
 
@@ -24,7 +24,7 @@ func (db *DB) PrimaryKeys(q, tableSchema, tableName string) ([]PrimaryKey, error
 		return d, nil
 	}
 
-	rows, err := db.Query(q, tableSchema, tableName)
+	rows, err := db.Query(q, schemaName, tableName)
 	if err != nil {
 		return d, err
 	}

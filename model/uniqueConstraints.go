@@ -16,8 +16,8 @@ type UniqueConstraint struct {
 }
 
 // UniqueConstraints returns a slice of Unique Constraints for the
-// (tableSchema, tableName) parameters
-func (db *DB) UniqueConstraints(q, tableSchema, tableName string) ([]UniqueConstraint, error) {
+// (schemaName, tableName) parameters
+func UniqueConstraints(db *sql.DB, q, schemaName, tableName string) ([]UniqueConstraint, error) {
 
 	var d []UniqueConstraint
 
@@ -25,7 +25,7 @@ func (db *DB) UniqueConstraints(q, tableSchema, tableName string) ([]UniqueConst
 		return d, nil
 	}
 
-	rows, err := db.Query(q, tableSchema, tableName)
+	rows, err := db.Query(q, schemaName, tableName)
 	if err != nil {
 		return d, err
 	}

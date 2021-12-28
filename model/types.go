@@ -4,6 +4,54 @@ import (
 	"database/sql"
 )
 
+// Type contains details for user defined types
+type Type struct {
+	TypeCatalog sql.NullString `json:"typeCatalog"`
+	TypeSchema  sql.NullString `json:"typeSchema"`
+	TypeName    sql.NullString `json:"typeName"`
+	TypeOwner   sql.NullString `json:"typeOwner"`
+	//DataType    sql.NullString `json:"dataType"`
+	Comment sql.NullString `json:"comment"`
+}
+
+// Types returns a slice of Types for the (schemaName) parameter
+func Types(db *sql.DB, q, schemaName string) ([]Type, error) {
+
+	var d []Type
+
+	if q == "" {
+		return d, nil
+	}
+
+	rows, err := db.Query(q, schemaName)
+	if err != nil {
+		return d, err
+	}
+	defer func() {
+		if cerr := rows.Close(); cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
+
+	for rows.Next() {
+		var u Type
+		err = rows.Scan(&u.TypeCatalog,
+			&u.TypeSchema,
+			&u.TypeName,
+			&u.TypeOwner,
+			//&u.DataType,
+			&u.Comment,
+		)
+		if err != nil {
+			return d, err
+		} else {
+			d = append(d, u)
+		}
+	}
+
+	return d, err
+}
+
 /*
 
 | Table Name                            | Column Name                       | Position | Matches                                 | Qty |
@@ -39,51 +87,3 @@ import (
 | USER_DEFINED_TYPES                    | REF_DTD_IDENTIFIER                | 29       | sql2003, pg, hsqldb                     | 3   |
 
 */
-
-// Type contains details for user defined types
-type Type struct {
-	TypeCatalog sql.NullString `json:"typeCatalog"`
-	TypeSchema  sql.NullString `json:"typeSchema"`
-	TypeName    sql.NullString `json:"typeName"`
-	TypeOwner   sql.NullString `json:"typeOwner"`
-	//DataType    sql.NullString `json:"dataType"`
-	Comment sql.NullString `json:"comment"`
-}
-
-// Types returns a slice of Types for the (schema) parameter
-func (db *DB) Types(q, tableSchema string) ([]Type, error) {
-
-	var d []Type
-
-	if q == "" {
-		return d, nil
-	}
-
-	rows, err := db.Query(q, tableSchema)
-	if err != nil {
-		return d, err
-	}
-	defer func() {
-		if cerr := rows.Close(); cerr != nil && err == nil {
-			err = cerr
-		}
-	}()
-
-	for rows.Next() {
-		var u Type
-		err = rows.Scan(&u.TypeCatalog,
-			&u.TypeSchema,
-			&u.TypeName,
-			&u.TypeOwner,
-			//&u.DataType,
-			&u.Comment,
-		)
-		if err != nil {
-			return d, err
-		} else {
-			d = append(d, u)
-		}
-	}
-
-	return d, err
-}

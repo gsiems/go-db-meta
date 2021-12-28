@@ -4,6 +4,66 @@ import (
 	"database/sql"
 )
 
+// Column contains details for Columns
+type Column struct {
+	TableCatalog    sql.NullString `json:"tableCatalog"`
+	TableSchema     sql.NullString `json:"tableSchema"`
+	TableName       sql.NullString `json:"tableName"`
+	ColumnName      sql.NullString `json:"columnName"`
+	OrdinalPosition sql.NullInt32  `json:"ordinalPosition"`
+	ColumnDefault   sql.NullString `json:"columnDefault"`
+	IsNullable      sql.NullString `json:"isNullable"`
+	DataType        sql.NullString `json:"dataType"`
+	DomainCatalog   sql.NullString `json:"domainCatalog"`
+	DomainSchema    sql.NullString `json:"domainSchema"`
+	DomainName      sql.NullString `json:"domainName"`
+	Comment         sql.NullString `json:"comment"`
+}
+
+// Columns returns a slice of Columns for the (tableSchema, tableName) parameters
+func Columns(db *sql.DB, q, tableSchema, tableName string) ([]Column, error) {
+
+	var d []Column
+
+	if q == "" {
+		return d, nil
+	}
+
+	rows, err := db.Query(q, tableSchema, tableName)
+	if err != nil {
+		return d, err
+	}
+	defer func() {
+		if cerr := rows.Close(); cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
+
+	for rows.Next() {
+		var u Column
+		err = rows.Scan(&u.TableCatalog,
+			&u.TableSchema,
+			&u.TableName,
+			&u.ColumnName,
+			&u.OrdinalPosition,
+			&u.DataType,
+			&u.IsNullable,
+			&u.ColumnDefault,
+			&u.DomainCatalog,
+			&u.DomainSchema,
+			&u.DomainName,
+			&u.Comment,
+		)
+		if err != nil {
+			return d, err
+		} else {
+			d = append(d, u)
+		}
+	}
+
+	return d, err
+}
+
 /*
 
 | Table Name                            | Column Name                       | Position | Matches                                 | Qty |
@@ -55,63 +115,3 @@ import (
 | COLUMNS                               | COLUMN_TYPE                       |          | mariadb, h2                             | 2   |
 
 */
-
-// Column contains details for Columns
-type Column struct {
-	TableCatalog    sql.NullString `json:"tableCatalog"`
-	TableSchema     sql.NullString `json:"tableSchema"`
-	TableName       sql.NullString `json:"tableName"`
-	ColumnName      sql.NullString `json:"columnName"`
-	OrdinalPosition sql.NullInt32  `json:"ordinalPosition"`
-	ColumnDefault   sql.NullString `json:"columnDefault"`
-	IsNullable      sql.NullString `json:"isNullable"`
-	DataType        sql.NullString `json:"dataType"`
-	DomainCatalog   sql.NullString `json:"domainCatalog"`
-	DomainSchema    sql.NullString `json:"domainSchema"`
-	DomainName      sql.NullString `json:"domainName"`
-	Comment         sql.NullString `json:"comment"`
-}
-
-// Columns returns a slice of Columns for the (tableSchema, tableName) parameters
-func (db *DB) Columns(q, tableSchema, tableName string) ([]Column, error) {
-
-	var d []Column
-
-	if q == "" {
-		return d, nil
-	}
-
-	rows, err := db.Query(q, tableSchema, tableName)
-	if err != nil {
-		return d, err
-	}
-	defer func() {
-		if cerr := rows.Close(); cerr != nil && err == nil {
-			err = cerr
-		}
-	}()
-
-	for rows.Next() {
-		var u Column
-		err = rows.Scan(&u.TableCatalog,
-			&u.TableSchema,
-			&u.TableName,
-			&u.ColumnName,
-			&u.OrdinalPosition,
-			&u.DataType,
-			&u.IsNullable,
-			&u.ColumnDefault,
-			&u.DomainCatalog,
-			&u.DomainSchema,
-			&u.DomainName,
-			&u.Comment,
-		)
-		if err != nil {
-			return d, err
-		} else {
-			d = append(d, u)
-		}
-	}
-
-	return d, err
-}
