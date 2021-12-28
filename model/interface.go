@@ -1,5 +1,5 @@
 package model
-
+/*
 import "database/sql"
 
 type metaData interface {
@@ -20,3 +20,4 @@ type metaData interface {
 	Types(q, tableSchema string) ([]Type, error)
 	UniqueConstraints(q, tableSchema, tableName string) ([]UniqueConstraint, error)
 }
+*/
