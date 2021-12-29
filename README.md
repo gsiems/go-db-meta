@@ -19,7 +19,7 @@ different information_schema implementations.
  * Database/schema comparisons
  * ???
 
-# Supposrted databases
+# Supported databases
 
  * PostgreSQL
  * SQLite
