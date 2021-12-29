@@ -19,11 +19,30 @@ different information_schema implementations.
  * Database/schema comparisons
  * ???
 
-# Roadmap
+# Supposrted databases
 
- 1. Describe the structure of tables/views.
- 1. Describe user defined domains/types.
- 1. Describe primary keys and table relationships.
- 1. Describe table constraints.
- 1. Describe table indexes.
- 1. ???
+ * PostgreSQL
+ * SQLite
+ * MariaDB (work in progress)
+ * MS-SQL (work in progress)
+ * MySQL (work in progress)
+ * Oracle (work in progress)
+
+# Available queries
+
+ * CheckConstraints
+ * Columns
+ * CurrentCatalog
+ * Dependencies
+ * Domains
+ * Indexes
+ * PrimaryKeys
+ * ReferentialConstraints
+ * Schemata
+ * Tables
+ * Types
+ * UniqueConstraints
+
+# Examples
+
+See the ```_example``` directory.
