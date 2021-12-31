@@ -36,5 +36,33 @@ SELECT '%s' AS table_catalog,
 	}
 
 	q2 := fmt.Sprintf(q, catName, "sqlite_%")
-	return m.Tables(db, q2, schemaName)
+	r, err = m.Tables(db, q2, schemaName)
+	if err != nil {
+		return r, err
+	}
+
+	// Wanting (approximate) row counts and not knowing any better way to do so in sqlite...
+	for i, v := range r {
+		if v.TableType.String == "TABLE" {
+			qc := `SELECT count() FROM "` + v.TableName.String + `"`
+			rows, err := db.Query(qc)
+			if err != nil {
+				return r, err
+			}
+			defer func() {
+				if cerr := rows.Close(); cerr != nil && err == nil {
+					err = cerr
+				}
+			}()
+
+			if rows.Next() {
+				err = rows.Scan(&r[i].RowCount)
+				if err != nil {
+					return r, err
+				}
+			}
+		}
+	}
+
+	return r, err
 }
