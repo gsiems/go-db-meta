@@ -63,29 +63,3 @@ SELECT col.table_catalog,
 `
 	return m.ReferentialConstraints(db, q, schemaName, tableName)
 }
-
-
-/*
-
-CONSTRAINT_CATALOG CONSTRAINT_SCHEMA CONSTRAINT_NAME     TABLE_SCHEMA  TABLE_NAME   CONSTRAINT_TYPE
------------------- ----------------- ------------------- ------------- ------------ ---------------
-def                classicmodels     PRIMARY             classicmodels employees    PRIMARY KEY
-def                classicmodels     employees_ibfk_1    classicmodels employees    FOREIGN KEY
-def                classicmodels     employees_ibfk_2    classicmodels employees    FOREIGN KEY
-def                classicmodels     zzt                 classicmodels foo          UNIQUE
-def                classicmodels     foo_ck              classicmodels foo          CHECK
-def                classicmodels     PRIMARY             classicmodels payments     PRIMARY KEY
-def                classicmodels     payments_ibfk_1     classicmodels payments     FOREIGN KEY
-def                classicmodels     PRIMARY             classicmodels productlines PRIMARY KEY
-def                classicmodels     PRIMARY             classicmodels products     PRIMARY KEY
-def                classicmodels     products_ibfk_1     classicmodels products     FOREIGN KEY
-def                classicmodels     PRIMARY             classicmodels offices      PRIMARY KEY
-def                classicmodels     PRIMARY             classicmodels customers    PRIMARY KEY
-def                classicmodels     customers_ibfk_1    classicmodels customers    FOREIGN KEY
-def                classicmodels     PRIMARY             classicmodels orders       PRIMARY KEY
-def                classicmodels     orders_ibfk_1       classicmodels orders       FOREIGN KEY
-def                classicmodels     PRIMARY             classicmodels orderdetails PRIMARY KEY
-def                classicmodels     orderdetails_ibfk_1 classicmodels orderdetails FOREIGN KEY
-def                classicmodels     orderdetails_ibfk_2 classicmodels orderdetails FOREIGN KEY
-
-*/
