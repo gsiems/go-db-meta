@@ -2,7 +2,6 @@ package sqlite
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -14,13 +13,18 @@ func Indexes(db *sql.DB, schemaName, tableName string) ([]m.Index, error) {
 
 	var r []m.Index
 
+	catName, err := catalogName(db)
+	if err != nil {
+		return r, err
+	}
+
 	q := `
-SELECT '%s' AS index_catalog,
+SELECT con.table_catalog AS index_catalog,
         con.table_schema AS index_schema,
         con.index_name,
         '' AS index_type,
         group_concat ( con.column_name, ', ' ) AS index_columns,
-        '%s' AS table_catalog,
+        con.table_catalog,
         con.table_schema,
         con.table_name,
         CASE
@@ -30,7 +34,8 @@ SELECT '%s' AS index_catalog,
         -- status
         '' AS comments
     FROM (
-        SELECT tab.name AS table_name,
+        SELECT args.table_catalog,
+                tab.name AS table_name,
                 args.table_schema,
                 idx.name AS index_name,
                 idx."unique",
@@ -40,13 +45,14 @@ SELECT '%s' AS index_catalog,
                 col.seqno AS ordinal_position
             FROM sqlite_master AS tab
             CROSS JOIN (
-                SELECT coalesce ( $1, '' ) AS table_schema,
+                SELECT '` + catName.String + `' AS table_catalog,
+                        coalesce ( $1, '' ) AS table_schema,
                         coalesce ( $2, '' ) AS table_name
                 ) AS args
             JOIN pragma_index_list ( tab.name ) AS idx
             JOIN pragma_index_info ( idx.name ) AS col
             WHERE tab.type = 'table'
-                AND tab.name NOT LIKE '%s'
+                AND substr ( tab.name, 1, 7 ) <>  'sqlite_'
                 AND ( args.table_name = '' OR args.table_name = tab.name )
             ORDER BY tab.name,
                 idx.name,
@@ -56,11 +62,5 @@ SELECT '%s' AS index_catalog,
         con.table_name,
         con.index_name
 `
-	catName, err := catalogName(db)
-	if err != nil {
-		return r, err
-	}
-
-	q2 := fmt.Sprintf(q, catName, catName, "sqlite_%")
-	return m.Indexes(db, q2, schemaName, tableName)
+	return m.Indexes(db, q, schemaName, tableName)
 }

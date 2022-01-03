@@ -2,7 +2,6 @@ package sqlite
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -14,29 +13,32 @@ func Tables(db *sql.DB, schemaName string) ([]m.Table, error) {
 
 	var r []m.Table
 
-	q := `
-SELECT '%s' AS table_catalog,
-        coalesce ( $1, '' ) AS table_schema,
-        name AS table_name,
-        NULL AS table_owner,
-        upper ( type ) AS table_type,
-        NULL AS row_count,
-        NULL AS comment,
-        CASE
-            WHEN type = 'view' THEN sql
-            END AS view_definition
-    FROM sqlite_master
-    WHERE type IN ( 'table', 'view' )
-        AND tbl_name NOT LIKE '%s'
-`
-
 	catName, err := catalogName(db)
 	if err != nil {
 		return r, err
 	}
 
-	q2 := fmt.Sprintf(q, catName, "sqlite_%")
-	r, err = m.Tables(db, q2, schemaName)
+	q := `
+SELECT args.table_catalog,
+        args.table_schema,
+        m.name AS table_name,
+        NULL AS table_owner,
+        upper ( m.type ) AS table_type,
+        NULL AS row_count,
+        NULL AS comment,
+        CASE
+            WHEN m.type = 'view' THEN m.sql
+            END AS view_definition
+    FROM sqlite_master m
+    CROSS JOIN (
+        SELECT '` + catName.String + `' AS table_catalog,
+                coalesce ( $1, '' ) AS table_schema
+        ) AS args
+    WHERE m.type IN ( 'table', 'view' )
+        AND substr ( m.name, 1, 7 ) <>  'sqlite_'
+`
+
+	r, err = m.Tables(db, q, schemaName)
 	if err != nil {
 		return r, err
 	}

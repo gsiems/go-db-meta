@@ -2,7 +2,6 @@ package sqlite
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -15,13 +14,18 @@ func ReferentialConstraints(db *sql.DB, schemaName, tableName string) ([]m.Refer
 
 	var r []m.ReferentialConstraint
 
+	catName, err := catalogName(db)
+	if err != nil {
+		return r, err
+	}
+
 	q := `
-SELECT '%s' AS table_catalog,
+SELECT args.table_catalog,
         args.table_schema,
         con.table_name,
         con.column_names,
         idx_fk.index_name AS constraint_name,
-        '%s' AS ref_table_catalog,
+        args.table_catalog AS ref_table_catalog,
         args.table_schema AS ref_table_schema,
         con.ref_table_name,
         con.ref_column_names,
@@ -55,7 +59,7 @@ SELECT '%s' AS table_catalog,
                     FROM sqlite_master AS tab
                     JOIN pragma_foreign_key_list ( tab.name ) AS con
                     WHERE tab.type IN ( 'table' )
-                        AND tab.name NOT LIKE '%s'
+                        AND substr ( tab.name, 1, 7 ) <>  'sqlite_'
                     ORDER BY tab.name,
                         con.id,
                         con.seq
@@ -68,7 +72,8 @@ SELECT '%s' AS table_catalog,
                 fk_col.delete_rule
         ) AS con
     CROSS JOIN (
-        SELECT coalesce ( $1, '' ) AS table_schema,
+        SELECT '` + catName.String + `' AS table_catalog,
+                coalesce ( $1, '' ) AS table_schema,
                 coalesce ( $2, '' ) AS table_name
         ) AS args
     LEFT JOIN (
@@ -83,7 +88,7 @@ SELECT '%s' AS table_catalog,
                     FROM sqlite_master AS tab
                     JOIN pragma_index_info ( tab.name ) AS col
                     WHERE tab.type IN ( 'index' )
-                        AND tab.name NOT LIKE '%s'
+                        AND substr ( tab.name, 1, 7 ) <>  'sqlite_'
                     ORDER BY tab.tbl_name,
                         tab.name,
                         col.seqno
@@ -115,12 +120,5 @@ SELECT '%s' AS table_catalog,
     WHERE ( con.table_name = args.table_name OR args.table_name = '' )
         OR ( con.ref_table_name = args.table_name OR args.table_name = '' )
 `
-
-	catName, err := catalogName(db)
-	if err != nil {
-		return r, err
-	}
-
-	q2 := fmt.Sprintf(q, catName, catName, "sqlite_%", "sqlite_%")
-	return m.ReferentialConstraints(db, q2, schemaName, tableName)
+	return m.ReferentialConstraints(db, q, schemaName, tableName)
 }

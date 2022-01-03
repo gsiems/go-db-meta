@@ -2,7 +2,6 @@ package sqlite
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -17,27 +16,34 @@ func PrimaryKeys(db *sql.DB, schemaName, tableName string) ([]m.PrimaryKey, erro
 	// Primary key names may show in the .schema command output but not,
 	// apparently in the output of any pragma queries.
 
+	catName, err := catalogName(db)
+	if err != nil {
+		return r, err
+	}
+
 	q := `
-SELECT '%s' AS table_catalog,
+SELECT pk_col.table_catalog,
         pk_col.table_schema,
         pk_col.table_name,
-        '' AS constraint_name,
+        'pk_' || pk_col.table_name AS constraint_name,
         group_concat ( pk_col.column_name, ', ' ) AS constraint_columns,
         'Enabled' AS status,
         '' AS comments
     FROM (
-        SELECT m.name as table_name,
+        SELECT args.table_catalog,
+                m.name as table_name,
                 args.table_schema,
                 col.name AS column_name,
                 col.pk AS ordinal_position
             FROM sqlite_master AS m
             JOIN pragma_table_info ( m.name ) AS col
             CROSS JOIN (
-                SELECT coalesce ( $1, '' ) AS table_schema,
+                SELECT '` + catName.String + `' AS table_catalog,
+                        coalesce ( $1, '' ) AS table_schema,
                         coalesce ( $2, '' ) AS table_name
                 ) AS args
             WHERE m.type = 'table'
-                AND m.tbl_name NOT LIKE '%s'
+                AND substr ( m.tbl_name, 1, 7 ) <>  'sqlite_'
                 AND ( args.table_name = '' OR args.table_name = m.name )
                 AND col.pk > 0
             ORDER BY m.name,
@@ -46,12 +52,5 @@ SELECT '%s' AS table_catalog,
     GROUP BY pk_col.table_schema,
         pk_col.table_name
 `
-
-	catName, err := catalogName(db)
-	if err != nil {
-		return r, err
-	}
-
-	q2 := fmt.Sprintf(q, catName, "sqlite_%")
-	return m.PrimaryKeys(db, q2, schemaName, tableName)
+	return m.PrimaryKeys(db, q, schemaName, tableName)
 }

@@ -2,7 +2,6 @@ package sqlite
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -13,8 +12,13 @@ func Columns(db *sql.DB, schemaName, tableName string) ([]m.Column, error) {
 
 	var r []m.Column
 
+	catName, err := catalogName(db)
+	if err != nil {
+		return r, err
+	}
+
 	q := `
-SELECT '%s' AS table_catalog,
+SELECT args.table_catalog,
         args.table_schema,
         m.name AS table_name,
         cols.name AS column_name,
@@ -32,122 +36,13 @@ SELECT '%s' AS table_catalog,
     FROM sqlite_master AS m
     JOIN pragma_table_info ( m.name ) AS cols
     CROSS JOIN (
-        SELECT coalesce ( $1, '' ) AS table_schema,
+        SELECT '` + catName.String + `' AS table_catalog,
+                coalesce ( $1, '' ) AS table_schema,
                 coalesce ( $2, '' ) AS table_name
         ) AS args
     WHERE m.type IN ( 'table', 'view' )
-        AND m.tbl_name NOT LIKE '%s'
+        AND substr ( m.tbl_name, 1, 7 ) <>  'sqlite_'
         AND ( args.table_name = '' OR args.table_name = m.name )
 `
-
-	catName, err := catalogName(db)
-	if err != nil {
-		return r, err
-	}
-
-	q2 := fmt.Sprintf(q, catName, "sqlite_%")
-	return m.Columns(db, q2, schemaName, tableName)
+	return m.Columns(db, q, schemaName, tableName)
 }
-
-/*
-type pto struct {
-	cid        sql.NullInt32
-	colName    sql.NullString
-	colType    sql.NullString
-	notnull    sql.NullString
-	colDefault sql.NullString
-}
-
-// Columns obtains the list of columns
-// for the (schemaName, tableName) parameters and returns the results
-func Columns(db *sql.DB, schemaName, tableName string) ([]m.Column, error) {
-
-	switch tableName {
-	case "":
-		var d []m.Column
-
-		tables, err := Tables(db, schemaName)
-		if err != nil {
-			return d, err
-		}
-
-		for _, v := range tables {
-			d2, cerr := tableColumns(db, schemaName, v.TableName)
-			if cerr != nil {
-				return d, cerr
-			}
-			d = append(d, d2)
-		}
-
-		return d, err
-	}
-
-	d, err := tableColumns(db, schemaName, tableName)
-
-	return d, err
-}
-
-func tableColumns(db *sql.DB, schemaName, tableName string) ([]m.Column, error) {
-
-	var d []m.Column
-
-	catName, err := catalogName(db)
-	if err != nil {
-		return d, err
-	}
-
-	q := `
-SELECT "cid" AS ordinal_position,
-        "name" AS column_name,
-        "type" AS dataType,
-        "notnull" AS not_null,
-        dflt_value AS default_value
-    FROM pragma_table_info('%s')
-    ORDER BY cid
-`
-
-	rows, err := db.Query(fmt.Sprintf(q, tableName))
-	if err != nil {
-		return d, err
-	}
-	defer func() {
-		if cerr := rows.Close(); cerr != nil && err == nil {
-			err = cerr
-		}
-	}()
-
-	for rows.Next() {
-		var u2 pto
-		err = rows.Scan(&u2.cid,
-			&u2.colName,
-			&u2.colType,
-			&u2.notnull,
-			&u2.colDefault,
-		)
-		if err != nil {
-			return d, err
-		} else {
-
-			var u m.Column
-
-			u.TableCatalog = catName
-			u.TableSchema = schemaName
-			u.TableName = tableName
-			u.ColumnName = u2.colName
-			u.OrdinalPosition = u2.cid
-			u.ColumnDefault = u2.colDefault
-			switch u2.notnull {
-			case 1:
-				u.IsNullable = "N"
-			default:
-				u.IsNullable = "Y"
-			}
-			u.DataType = u2.colType
-
-			d = append(d, u)
-		}
-	}
-
-	return d, err
-}
-*/

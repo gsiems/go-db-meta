@@ -27,7 +27,7 @@ SELECT m.name AS table_name,
         SELECT coalesce ( $1, '' ) AS table_name
         ) AS args
     WHERE m.type = 'table'
-        AND m.tbl_name NOT LIKE 'sqlite_%'
+        AND substr ( m.tbl_name, 1, 7 ) <>  'sqlite'
         AND ( args.table_name = '' OR args.table_name = m.name )
 `
 
