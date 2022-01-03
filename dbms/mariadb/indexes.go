@@ -29,8 +29,8 @@ SELECT stat.table_catalog AS index_catalog,
         index_comment AS comment
     FROM information_schema.statistics stat
     CROSS JOIN (
-        SELECT coalesce ( $1, '' ) AS schema_name,
-                coalesce ( $2, '' ) AS table_name
+        SELECT coalesce ( ?, '' ) AS schema_name,
+                coalesce ( ?, '' ) AS table_name
         ) AS args
     WHERE stat.table_schema NOT IN ( 'information_schema', 'mysql', 'performance_schema', 'sys' )
         AND ( stat.table_schema = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )

@@ -23,8 +23,8 @@ SELECT tab.table_catalog,
         NULL AS comment
     FROM information_schema.tables tab
     CROSS JOIN (
-        SELECT coalesce ( $1, '' ) AS schema_name,
-                coalesce ( $2, '' ) AS table_name
+        SELECT coalesce ( ?, '' ) AS schema_name,
+                coalesce ( ?, '' ) AS table_name
         ) AS args
     JOIN information_schema.table_constraints con
         ON ( con.table_schema = tab.table_schema

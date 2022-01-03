@@ -23,7 +23,7 @@ SELECT t.table_catalog,
         v.view_definition
     FROM information_schema.tables t
     CROSS JOIN (
-            SELECT coalesce ( $1, '' ) AS schema_name
+            SELECT coalesce ( ?, '' ) AS schema_name
     ) AS args
     LEFT JOIN information_schema.views v
         ON ( v.table_schema = t.table_schema
