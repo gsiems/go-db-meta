@@ -2,7 +2,6 @@ package ora
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -50,7 +49,7 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS index_catalog,
     --        AND ie.table_owner = col.table_owner
     --        AND ie.table_name = col.table_name
     --        AND ie.column_position = col.column_position )
-    WHERE idx.table_owner NOT IN ( %s )
+    WHERE idx.table_owner NOT IN ( ` + systemTables + ` )
         AND ( idx.table_owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
         AND ( idx.table_name = args.table_name OR args.table_name IS NULL )
     GROUP BY sys_context ( 'userenv', 'DB_NAME' ),
@@ -65,6 +64,5 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS index_catalog,
             ELSE 'NO'
             END
 `
-	q2 := fmt.Sprintf(q, systemTables)
-	return m.Indexes(db, q2, schemaName, tableName)
+	return m.Indexes(db, q, schemaName, tableName)
 }

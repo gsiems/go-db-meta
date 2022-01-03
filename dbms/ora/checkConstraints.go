@@ -2,7 +2,6 @@ package ora
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -23,20 +22,14 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         con.table_name,
         con.constraint_name,
         con.search_condition AS check_clause,
-        CASE con.status
-            WHEN 'ENABLED' THEN 'Enabled'
-            WHEN 'DISABLED' THEN 'Disabled'
-            ELSE con.status
-            END AS status,
+        initcap ( con.status) AS status,
         NULL AS comments
     FROM dba_constraints con
     CROSS JOIN args
     WHERE con.constraint_type = 'C'
-        AND con.owner NOT IN ( %s )
-        AND con.owner NOT LIKE '%s'
+        AND con.owner NOT IN ( ` + systemTables + ` )
         AND ( con.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
         AND ( con.table_name = args.table_name OR args.table_name IS NULL )
 `
-	q2 := fmt.Sprintf(q, systemTables, "%$%")
-	return m.CheckConstraints(db, q2, schemaName, tableName)
+	return m.CheckConstraints(db, q, schemaName, tableName)
 }

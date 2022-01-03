@@ -2,7 +2,6 @@ package ora
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -26,11 +25,9 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS type_catalog,
     CROSS JOIN args
     WHERE ( obj.owner = args.schema_name
             OR args.schema_name IS NULL )
-        AND obj.owner NOT IN ( %s )
+        AND obj.owner NOT IN ( ` + systemTables + ` )
 `
-	q2 := fmt.Sprintf(q, systemTables)
-
-	return m.Types(db, q2, schemaName)
+	return m.Types(db, q, schemaName)
 }
 
 /*

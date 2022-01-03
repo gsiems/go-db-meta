@@ -2,7 +2,6 @@ package ora
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -33,7 +32,7 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
             AND col.table_name = con.table_name
             AND col.constraint_name = con.constraint_name )
     WHERE con.constraint_type = 'U'
-        AND con.owner NOT IN ( %s )
+        AND con.owner NOT IN ( ` + systemTables + ` )
         AND ( con.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
         AND ( con.table_name = args.table_name OR args.table_name IS NULL )
     GROUP BY con.owner,
@@ -41,6 +40,5 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         con.constraint_name,
         initcap ( con.status )
 `
-	q2 := fmt.Sprintf(q, systemTables)
-	return m.UniqueConstraints(db, q2, schemaName, tableName)
+	return m.UniqueConstraints(db, q, schemaName, tableName)
 }

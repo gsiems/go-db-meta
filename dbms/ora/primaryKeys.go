@@ -2,7 +2,6 @@ package ora
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -24,32 +23,23 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         con.constraint_name,
         listagg ( col.column_name, ', ' ) WITHIN GROUP (
             ORDER BY col.position ) AS constraint_columns,
-        CASE con.status
-            WHEN 'ENABLED' THEN 'Enabled'
-            WHEN 'DISABLED' THEN 'Disabled'
-            ELSE con.status
-            END AS status,
+        initcap ( con.status) AS status,
         NULL AS comments
-    FROM all_constraints con
+    FROM dba_constraints con
     CROSS JOIN args
-    JOIN all_cons_columns col
+    JOIN dba_cons_columns col
         ON ( col.owner = con.owner
             AND col.table_name = con.table_name
             AND col.constraint_name = con.constraint_name )
     WHERE con.constraint_type = 'P'
-        AND con.owner NOT IN ( %s )
+        AND con.owner NOT IN ( ` + systemTables + ` )
         AND ( col.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
         AND ( col.table_name = args.table_name OR args.table_name IS NULL )
     GROUP BY sys_context ( 'userenv', 'DB_NAME' ),
         con.owner,
         con.table_name,
         con.constraint_name,
-        CASE con.status
-            WHEN 'ENABLED' THEN 'Enabled'
-            WHEN 'DISABLED' THEN 'Disabled'
-            ELSE con.status
-            END
+        initcap ( con.status )
 `
-	q2 := fmt.Sprintf(q, systemTables)
-	return m.PrimaryKeys(db, q2, schemaName, tableName)
+	return m.PrimaryKeys(db, q, schemaName, tableName)
 }

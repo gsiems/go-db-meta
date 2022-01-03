@@ -2,7 +2,6 @@ package ora
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -56,20 +55,18 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         -- UdtSchema,
         -- UdtName,
         cmt.comments
-    FROM all_tab_columns col
+    FROM dba_tab_columns col
     CROSS JOIN args
-    LEFT OUTER JOIN all_col_comments cmt
+    LEFT OUTER JOIN dba_col_comments cmt
          ON ( col.owner = cmt.owner
             AND col.table_name = cmt.table_name
             AND col.column_name = cmt.column_name )
-    WHERE col.owner NOT IN ( %s )
+    WHERE col.owner NOT IN (` + systemTables + ` )
         AND ( col.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
         AND ( col.table_name = args.table_name OR args.table_name IS NULL )
     ORDER BY col.owner,
         col.table_name,
         col.column_id
 `
-	q2 := fmt.Sprintf(q, systemTables)
-
-	return m.Columns(db, q2, schemaName, tableName)
+	return m.Columns(db, q, schemaName, tableName)
 }

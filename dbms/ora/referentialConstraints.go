@@ -2,7 +2,6 @@ package ora
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -58,8 +57,8 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
             AND rcon.constraint_name = rcol.constraint_name
             AND rcon.table_name = rcol.table_name )
     WHERE con.constraint_type = 'R'
-        AND con.owner NOT IN ( %s )
-        AND rcon.owner NOT IN ( %s )
+        AND con.owner NOT IN (` + systemTables + ` )
+        AND rcon.owner NOT IN ( ` + systemTables + ` )
         AND ( ( ( con.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
                 AND ( con.table_name = args.table_name OR args.table_name IS NULL ) )
             OR ( ( rcon.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
@@ -79,7 +78,5 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
             ELSE con.status
             END
 `
-
-	q2 := fmt.Sprintf(q, systemTables, systemTables)
-	return m.ReferentialConstraints(db, q2, schemaName, tableName)
+	return m.ReferentialConstraints(db, q, schemaName, tableName)
 }

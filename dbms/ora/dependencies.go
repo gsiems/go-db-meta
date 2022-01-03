@@ -2,7 +2,6 @@ package ora
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -60,8 +59,8 @@ base AS (
         FROM dba_dependencies d
         CROSS JOIN args
         WHERE d.referenced_type <> 'MATERIALIZED VIEW'
-            AND d.owner NOT IN ( %s )
-            AND d.referenced_owner NOT IN ( %s )
+            AND d.owner NOT IN ( ` + systemTables + ` )
+            AND d.referenced_owner NOT IN ( ` + systemTables + ` )
             AND ( d.owner || '.' || d.name <> d.referenced_owner || '.' || d.referenced_name )
             AND ( ( ( d.owner = args.schema_name OR ( args.schema_name IS NULL AND args.object_name IS NULL ) )
                     AND ( d.name = args.object_name OR args.object_name IS NULL ) )
@@ -84,7 +83,5 @@ SELECT DISTINCT d.owner,
             AND rmv.object_name = d.referenced_name
             AND rmv.object_type = 'MATERIALIZED VIEW' )
 `
-
-	q2 := fmt.Sprintf(q, systemTables, systemTables)
-	return m.Dependencies(db, q2, schemaName, objectName)
+	return m.Dependencies(db, q, schemaName, objectName)
 }

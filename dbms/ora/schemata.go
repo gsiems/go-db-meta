@@ -30,7 +30,7 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS catalog_name,
         NULL AS comments
     FROM dba_users usr
     CROSS JOIN cs
-    WHERE usr.username NOT IN ( %s )
+    WHERE usr.username NOT IN ( ` + systemTables + ` )
         AND EXISTS (
             SELECT 1
                 FROM dba_objects obj
@@ -38,12 +38,7 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS catalog_name,
                     AND obj.object_type IN ( 'TABLE', 'VIEW', 'MATERIALIZED VIEW' ) )
 `
 
-	q2 := fmt.Sprintf(q, systemTables)
-	//return m.Tables(db, q2, nclude)
-
-	//fmt.Println(q2)
-
-	d, err := m.Schemata(db, q2, nclude, xclude)
+	d, err := m.Schemata(db, q, nclude, xclude)
 	if err != nil {
 		return d, err
 	}

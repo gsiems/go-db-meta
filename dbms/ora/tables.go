@@ -2,7 +2,6 @@ package ora
 
 import (
 	"database/sql"
-	"fmt"
 
 	m "github.com/gsiems/go-db-meta/model"
 )
@@ -25,7 +24,7 @@ tab AS (
         CROSS JOIN args
         WHERE ( obj.owner = args.schema_name
                 OR args.schema_name IS NULL )
-            AND obj.owner NOT IN ( %s )
+            AND obj.owner NOT IN ( ` + systemTables + ` )
             AND obj.object_type IN ( 'TABLE', 'VIEW', 'MATERIALIZED VIEW' )
         GROUP BY obj.owner,
             obj.object_name
@@ -52,8 +51,5 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         ON ( tab.owner = cmt.owner
             AND tab.object_name = cmt.table_name )
 `
-
-	q2 := fmt.Sprintf(q, systemTables)
-
-	return m.Tables(db, q2, schemaName)
+	return m.Tables(db, q, schemaName)
 }
