@@ -35,6 +35,7 @@ SELECT dom.domain_catalog,
             ELSE dom.data_type
             END AS data_type,
         dom.domain_default,
+        NULL AS check_clause,
         NULL AS comments,
     FROM information_schema.domains dom
     CROSS JOIN args

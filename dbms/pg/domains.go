@@ -21,6 +21,11 @@ SELECT current_database() AS domain_catalog,
         pg_catalog.pg_get_userbyid ( t.typowner ) AS domain_owner,
         pg_catalog.format_type ( t.typbasetype, t.typtypmod ) AS domain_type,
         t.typdefault AS domain_default,
+        pg_catalog.array_to_string ( ARRAY (
+                SELECT pg_catalog.pg_get_constraintdef ( r.oid, true )
+                    FROM pg_catalog.pg_constraint r
+                    WHERE t.oid = r.contypid
+               ), ' ') AS check_clause,
         pg_catalog.obj_description ( t.oid, 'pg_type' ) AS comments
     FROM pg_catalog.pg_type t
     CROSS JOIN args
