@@ -17,8 +17,6 @@ SELECT col.table_catalog,
         col.table_name,
         col.column_name,
         col.ordinal_position,
-        col.column_default,
-        col.is_nullable,
         CASE
             WHEN col.datetime_precision IS NOT NULL
                 THEN concat( col.data_type, "(", col.datetime_precision, ")" )
@@ -34,6 +32,8 @@ SELECT col.table_catalog,
                 THEN concat( col.data_type, "(", col.character_maximum_length, ")" )
             ELSE col.data_type
             END AS data_type,
+        col.is_nullable,
+        col.column_default,
         NULL AS DomainCatalog,
         NULL AS DomainSchema,
         NULL AS DomainName,

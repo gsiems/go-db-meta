@@ -11,9 +11,9 @@ type Column struct {
 	TableName       sql.NullString `json:"tableName"`
 	ColumnName      sql.NullString `json:"columnName"`
 	OrdinalPosition sql.NullInt32  `json:"ordinalPosition"`
-	ColumnDefault   sql.NullString `json:"columnDefault"`
-	IsNullable      sql.NullString `json:"isNullable"`
 	DataType        sql.NullString `json:"dataType"`
+	IsNullable      sql.NullString `json:"isNullable"`
+	ColumnDefault   sql.NullString `json:"columnDefault"`
 	DomainCatalog   sql.NullString `json:"domainCatalog"`
 	DomainSchema    sql.NullString `json:"domainSchema"`
 	DomainName      sql.NullString `json:"domainName"`
