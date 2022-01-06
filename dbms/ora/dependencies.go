@@ -42,20 +42,20 @@ WITH args AS (
         FROM dual
 ),
 base AS (
-    SELECT DISTINCT owner,
-            name,
-            referenced_owner,
-            referenced_name,
+    SELECT DISTINCT owner AS object_schema,
+            name AS object_name,
             CASE
                 WHEN d.type = 'PACKAGE BODY' THEN 'PACKAGE'
                 WHEN d.type = 'TYPE BODY' THEN 'TYPE'
                 ELSE d.type
-                END AS type,
+                END AS object_type,
+            referenced_owner AS dep_object_schema,
+            referenced_name AS dep_object_name,
             CASE
                 WHEN d.referenced_type = 'PACKAGE BODY' THEN 'PACKAGE'
                 WHEN d.referenced_type = 'TYPE BODY' THEN 'TYPE'
                 ELSE d.referenced_type
-                END AS referenced_type
+                END AS dep_object_type
         FROM dba_dependencies d
         CROSS JOIN args
         WHERE d.referenced_type <> 'MATERIALIZED VIEW'
@@ -67,20 +67,24 @@ base AS (
                 OR ( ( d.referenced_owner = args.schema_name OR ( args.schema_name IS NULL AND args.object_name IS NULL ) )
                     AND ( d.referenced_name = args.object_name OR args.object_name IS NULL ) ) )
 )
-SELECT DISTINCT d.owner,
-        d.name,
-        coalesce ( mv.object_type, d.type ) AS type,
-        d.referenced_owner,
-        d.referenced_name,
-        coalesce ( rmv.object_type, d.referenced_type ) AS referenced_type
+SELECT DISTINCT sys_context ( 'userenv', 'DB_NAME' ) AS object_catalog,
+        d.object_schema,
+        d.object_name,
+        d.object_schema AS object_owner,
+        coalesce ( mv.object_type, d.object_type ) AS object_type,
+        sys_context ( 'userenv', 'DB_NAME' ) AS dep_object_catalog,
+        d.dep_object_schema,
+        d.dep_object_name,
+        d.dep_object_schema AS dep_object_owner,
+        coalesce ( rmv.object_type, d.dep_object_type ) AS dep_object_type
     FROM base d
     LEFT OUTER JOIN dba_objects mv
-        ON ( mv.owner = d.owner
-            AND mv.object_name = d.name
+        ON ( mv.owner = d.object_schema
+            AND mv.object_name = d.object_name
             AND mv.object_type = 'MATERIALIZED VIEW' )
     LEFT OUTER JOIN dba_objects rmv
-        ON ( rmv.owner = d.referenced_owner
-            AND rmv.object_name = d.referenced_name
+        ON ( rmv.owner = d.dep_object_schema
+            AND rmv.object_name = d.dep_object_name
             AND rmv.object_type = 'MATERIALIZED VIEW' )
 `
 	return m.Dependencies(db, q, schemaName, objectName)
