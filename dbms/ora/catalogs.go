@@ -61,7 +61,7 @@ SELECT d.value
 	q = `
 SELECT coalesce ( s.value, d.value ) AS value
     FROM nls_database_parameters d
-    LEFT OUTER JOIN sys.nls_session_parameters s
+    LEFT OUTER JOIN nls_session_parameters s
         ON ( d.parameter = s.parameter )
     WHERE d.parameter = 'NLS_TERRITORY'
 `
@@ -74,7 +74,7 @@ SELECT coalesce ( s.value, d.value ) AS value
 	q = `
 SELECT coalesce ( s.value, d.value ) AS value
     FROM nls_database_parameters d
-    LEFT OUTER JOIN sys.nls_session_parameters s
+    LEFT OUTER JOIN nls_session_parameters s
         ON ( d.parameter = s.parameter )
     WHERE d.parameter = 'NLS_LANGUAGE'
 `
