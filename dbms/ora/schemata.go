@@ -63,7 +63,7 @@ func commentedSchemas(db *sql.DB) (map[string]bool, error) {
 
 	q := `
     SELECT owner
-        FROM sys.dba_objects
+        FROM all_objects
         WHERE object_type = 'VIEW'
             AND object_name = 'SCHEMA_COMMENT'
 `
