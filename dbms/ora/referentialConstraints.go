@@ -17,7 +17,7 @@ WITH args AS (
     SELECT :1 AS schema_name,
             :2 AS table_name
         FROM dual
-)
+),
 cols AS (
     SELECT col.owner,
             col.table_name,
