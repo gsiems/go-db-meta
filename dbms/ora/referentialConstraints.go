@@ -18,18 +18,28 @@ WITH args AS (
             :2 AS table_name
         FROM dual
 )
+cols AS (
+    SELECT col.owner,
+            col.table_name,
+            col.constraint_name,
+            listagg ( col.column_name, ', ' ) WITHIN GROUP (
+                ORDER BY col.position ) AS table_columns
+        FROM dba_cons_columns col
+        WHERE col.owner NOT IN (` + systemTables + ` )
+        GROUP BY col.owner,
+            col.table_name,
+            col.constraint_name
+)
 SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         con.owner AS table_schema,
         con.table_name,
-        listagg ( col.column_name, ', ' ) WITHIN GROUP (
-            ORDER BY col.position ) AS table_columns,
+        col.table_columns,
         --con.constraint_type,
         con.constraint_name,
         sys_context ( 'userenv', 'DB_NAME' ) AS ref_table_catalog,
         rcon.owner AS ref_table_schema,
         rcon.table_name AS ref_table_name,
-        listagg ( rcol.column_name, ', ' ) WITHIN GROUP (
-            ORDER BY rcol.position ) AS ref_table_columns,
+        rcol.table_columns AS ref_table_columns,
         --rcon.constraint_type AS ref_constraint_type,
         rcon.constraint_name AS ref_constraint_name,
         NULL AS match_option, -- TODO
@@ -48,11 +58,11 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
         ON ( con.r_owner = rcon.owner
             AND con.r_constraint_name = rcon.constraint_name )
     CROSS JOIN args
-    JOIN dba_cons_columns col
+    JOIN cols col
         ON ( con.owner = col.owner
             AND con.constraint_name = col.constraint_name
             AND con.table_name = col.table_name )
-    JOIN dba_cons_columns rcol
+    JOIN cols rcol
         ON ( rcon.owner = rcol.owner
             AND rcon.constraint_name = rcol.constraint_name
             AND rcon.table_name = rcol.table_name )
@@ -63,20 +73,6 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
                 AND ( con.table_name = args.table_name OR args.table_name IS NULL ) )
             OR ( ( rcon.owner = args.schema_name OR ( args.schema_name IS NULL AND args.table_name IS NULL ) )
                 AND ( rcon.table_name = args.table_name OR args.table_name IS NULL ) ) )
-    GROUP BY sys_context ( 'userenv', 'DB_NAME' ),
-        con.owner,
-        con.table_name,
-        con.constraint_name,
-        sys_context ( 'userenv', 'DB_NAME' ),
-        rcon.owner,
-        rcon.table_name,
-        rcon.constraint_name,
-        con.delete_rule,
-        CASE con.status
-            WHEN 'ENABLED' THEN 'YES'
-            WHEN 'DISABLED' THEN 'NO'
-            ELSE con.status
-            END
 `
 	return m.ReferentialConstraints(db, q, schemaName, tableName)
 }
