@@ -19,11 +19,13 @@ SELECT pg_catalog.current_database () AS catalog_name,
         n.nspname AS table_schema,
         c.relname AS table_name,
         pg_catalog.pg_get_userbyid ( c.relowner ) AS table_owner,
-        CASE c.relkind
-            WHEN 'f' THEN 'FOREIGN TABLE'
-            WHEN 'm' THEN 'MATERIALIZED VIEW'
-            WHEN 'r' THEN 'TABLE'
-            WHEN 'v' THEN 'VIEW'
+        CASE
+            WHEN i.inhrelid IS NOT NULL THEN 'TABLE PARTITION'
+            WHEN c.relkind = 'f' THEN 'FOREIGN TABLE'
+            WHEN c.relkind = 'm' THEN 'MATERIALIZED VIEW'
+            WHEN c.relkind = 'p' THEN 'PARTITIONED TABLE'
+            WHEN c.relkind = 'r' THEN 'TABLE'
+            WHEN c.relkind = 'v' THEN 'VIEW'
             END AS table_type,
         c.reltuples::bigint AS row_count,
         pg_catalog.obj_description ( c.oid, 'pg_class' ) AS comment,
@@ -35,7 +37,9 @@ SELECT pg_catalog.current_database () AS catalog_name,
     CROSS JOIN args
     LEFT OUTER JOIN pg_catalog.pg_namespace n
         ON ( n.oid = c.relnamespace )
-    WHERE c.relkind IN ( 'v', 'r', 'f', 'm' )
+    LEFT OUTER JOIN pg_catalog.pg_inherits i
+        ON ( c.oid = i.inhrelid )
+    WHERE c.relkind IN ( 'f', 'm', 'p', 'r', 'v' )
         -- AND c.relpersistence IN ( 'p' ) -- 'u' ??
         AND n.nspname <> 'information_schema'
         AND n.nspname !~ '^pg_'
