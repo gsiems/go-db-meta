@@ -26,7 +26,7 @@ different information_schema implementations.
  * MariaDB (work in progress)
  * MS-SQL (work in progress)
  * MySQL (work in progress)
- * Oracle (work in progress)
+ * Oracle
 
 # Available queries
 
