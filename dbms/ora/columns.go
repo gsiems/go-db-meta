@@ -34,7 +34,14 @@ SELECT sys_context ( 'userenv', 'DB_NAME' ) AS table_catalog,
             WHEN col.data_type = 'NUMBER'
                 AND coalesce ( col.data_length, 0 ) > 0
                 THEN col.data_type || '(' || col.data_length || ')'
-            WHEN col.data_type IN ( 'CHAR', 'NCHAR', 'VARCHAR2', 'NVARCHAR2' )
+            WHEN col.data_type IN ( 'CHAR', 'VARCHAR', 'VARCHAR2' )
+                AND coalesce ( col.char_length, 0 ) > 0 THEN
+                CASE
+                    WHEN col.char_used = 'B' THEN col.data_type || '(' || col.char_length || ' BYTE)'
+                    WHEN col.char_used = 'C' THEN col.data_type || '(' || col.char_length || ' CHAR)'
+                    ELSE col.data_type || '(' || col.char_length || ')'
+                    END
+            WHEN col.data_type IN ( 'NCHAR', 'NVARCHAR2' )
                 AND coalesce ( col.char_length, 0 ) > 0
                 -- TODO: bytes vs. chars
                 THEN col.data_type || '(' || col.char_length || ')'
