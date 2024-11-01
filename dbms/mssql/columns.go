@@ -24,13 +24,13 @@ SELECT col.table_catalog,
         col.column_default,
         col.is_nullable,
         CASE
-            WHEN col.datetime_precision IS NOT NULL THEN
+            WHEN col.datetime_precision IS NOT NULL
                 THEN col.data_type || '(' || col.datetime_precision || ')'
-            WHEN col.numeric_scale IS NOT NULL THEN
+            WHEN col.numeric_scale IS NOT NULL
                 THEN col.data_type || '(' || col.numeric_precision || ',' || col.numeric_scale || ')'
-            WHEN col.numeric_precision IS NOT NULL AND coalesce ( col.numeric_precision, 0 ) > 0 THEN
+            WHEN col.numeric_precision IS NOT NULL AND coalesce ( col.numeric_precision, 0 ) > 0
                 THEN col.data_type || '(' || col.numeric_precision || ',' || col.numeric_scale || ')'
-            WHEN col.numeric_precision IS NOT NULL THEN
+            WHEN col.numeric_precision IS NOT NULL
                 THEN col.data_type || '(' || col.numeric_precision || ')'
             WHEN col.data_type IN ( 'char', 'varchar' )
                 AND coalesce ( col.character_maximum_length, 0 ) > 0

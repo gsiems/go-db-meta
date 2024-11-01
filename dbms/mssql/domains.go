@@ -20,13 +20,13 @@ SELECT dom.domain_catalog,
         dom.domain_name,
         dom.domain_name AS domain_owner,
         CASE
-            WHEN dom.datetime_precision IS NOT NULL THEN
+            WHEN dom.datetime_precision IS NOT NULL
                 THEN dom.data_type || '(' || dom.datetime_precision || ')'
-            WHEN dom.numeric_scale IS NOT NULL THEN
+            WHEN dom.numeric_scale IS NOT NULL
                 THEN dom.data_type || '(' || dom.numeric_precision || ',' || dom.numeric_scale || ')'
-            WHEN dom.numeric_precision IS NOT NULL AND coalesce ( dom.numeric_precision, 0 ) > 0 THEN
+            WHEN dom.numeric_precision IS NOT NULL AND coalesce ( dom.numeric_precision, 0 ) > 0
                 THEN dom.data_type || '(' || dom.numeric_precision || ',' || dom.numeric_scale || ')'
-            WHEN dom.numeric_precision IS NOT NULL THEN
+            WHEN dom.numeric_precision IS NOT NULL
                 THEN dom.data_type || '(' || dom.numeric_precision || ')'
             WHEN dom.data_type IN ( 'char', 'varchar' )
                 AND coalesce ( dom.character_maximum_length, 0 ) > 0
