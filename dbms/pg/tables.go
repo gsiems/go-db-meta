@@ -13,9 +13,11 @@ func Tables(db *sql.DB, schemaName string) ([]m.Table, error) {
 
 	q := `
 WITH args AS (
-    SELECT coalesce ( $1, '' ) AS schema_name
+    SELECT current_database () AS db_name,
+            coalesce ( $1, '' ) AS schema_name,
+            coalesce ( $1, '' ) = '' AS ignore_schema
 )
-SELECT pg_catalog.current_database () AS catalog_name,
+SELECT args.db_name AS catalog_name,
         n.nspname AS table_schema,
         c.relname AS table_name,
         pg_catalog.pg_get_userbyid ( c.relowner ) AS table_owner,
@@ -44,7 +46,7 @@ SELECT pg_catalog.current_database () AS catalog_name,
         AND n.nspname <> 'information_schema'
         AND n.nspname !~ '^pg_'
         AND ( n.nspname = args.schema_name
-            OR args.schema_name = '' )
+            OR args.ignore_schema )
 `
 	return m.Tables(db, q, schemaName)
 }

@@ -13,9 +13,11 @@ func Types(db *sql.DB, schemaName string) ([]m.Type, error) {
 
 	q := `
 WITH args AS (
-    SELECT coalesce ( $1, '' ) AS schema_name
+    SELECT current_database () AS db_name,
+            coalesce ( $1, '' ) AS schema_name,
+            coalesce ( $1, '' ) = '' AS ignore_schema
 )
-SELECT current_database () AS user_defined_type_catalog,
+SELECT args.db_name AS user_defined_type_catalog,
         n.nspname AS user_defined_type_schema,
         t.typname AS user_defined_type_name,
         pg_catalog.pg_get_userbyid ( t.typowner ) AS user_defined_type_owner,
@@ -41,7 +43,7 @@ SELECT current_database () AS user_defined_type_catalog,
         AND NOT ( t.typtype = 'c'
             AND n.nspname = 'pg_catalog' )
         AND ( n.nspname = args.schema_name
-            OR args.schema_name = '' )
+            OR args.ignore_schema )
 `
 	return m.Types(db, q, schemaName)
 }

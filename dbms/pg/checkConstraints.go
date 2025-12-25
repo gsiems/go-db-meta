@@ -13,10 +13,13 @@ func CheckConstraints(db *sql.DB, schemaName, tableName string) ([]m.CheckConstr
 
 	q := `
 WITH args AS (
-    SELECT coalesce ( $1, '' ) AS schema_name,
-            coalesce ( $2, '' ) AS table_name
+    SELECT current_database () AS db_name,
+            coalesce ( $1, '' ) AS schema_name,
+            coalesce ( $2, '' ) AS table_name,
+            coalesce ( $1, $2, '' ) = '' AS ignore_schema,
+            coalesce ( $2, '' ) = '' AS ignore_table
 )
-SELECT current_database() AS table_catalog,
+SELECT args.db_name AS table_catalog,
         n.nspname AS table_schema,
         r.relname AS table_name,
         con.conname AS constraint_name,
@@ -35,8 +38,8 @@ SELECT current_database() AS table_catalog,
         AND con.contype = 'c'
         AND n.nspname <> 'information_schema'
         AND n.nspname !~ '^pg_'
-        AND ( n.nspname = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
-        AND ( r.relname = args.table_name OR args.table_name = '' )
+        AND ( n.nspname = args.schema_name OR args.ignore_schema )
+        AND ( r.relname = args.table_name OR args.ignore_table )
 `
 	return m.CheckConstraints(db, q, schemaName, tableName)
 }

@@ -13,10 +13,13 @@ func PrimaryKeys(db *sql.DB, schemaName, tableName string) ([]m.PrimaryKey, erro
 
 	q := `
 WITH args AS (
-    SELECT coalesce ( $1, '' ) AS schema_name,
-            coalesce ( $2, '' ) AS table_name
+    SELECT current_database () AS db_name,
+            coalesce ( $1, '' ) AS schema_name,
+            coalesce ( $2, '' ) AS table_name,
+            coalesce ( $1, $2, '' ) = '' AS ignore_schema,
+            coalesce ( $2, '' ) = '' AS ignore_table
 )
-SELECT current_database () AS table_catalog,
+SELECT args.db_name AS table_catalog,
         nr.nspname AS table_schema,
         r.relname AS table_name,
         c.conname AS constraint_name,
@@ -38,8 +41,8 @@ SELECT current_database () AS table_catalog,
         AND c.contype <> 'f'
         AND nr.nspname <> 'information_schema'
         AND nr.nspname !~ '^pg_'
-        AND ( nr.nspname = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
-        AND ( r.relname = args.table_name OR args.table_name = '' )
+        AND ( nr.nspname = args.schema_name OR args.ignore_schema )
+        AND ( r.relname = args.table_name OR args.ignore_table )
     ORDER BY nr.nspname,
         r.relname
 `

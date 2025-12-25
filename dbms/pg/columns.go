@@ -13,10 +13,13 @@ func Columns(db *sql.DB, schemaName, tableName string) ([]m.Column, error) {
 
 	q := `
 WITH args AS (
-    SELECT coalesce ( $1, '' ) AS schema_name,
-            coalesce ( $2, '' ) AS table_name
+    SELECT current_database () AS db_name,
+            coalesce ( $1, '' ) AS schema_name,
+            coalesce ( $2, '' ) AS table_name,
+            coalesce ( $1, $2, '' ) = '' AS ignore_schema,
+            coalesce ( $2, '' ) = '' AS ignore_table
 )
-SELECT current_database () AS table_catalog,
+SELECT args.db_name AS table_catalog,
         n.nspname AS table_schema,
         c.relname AS table_name,
         a.attname AS column_name,
@@ -28,7 +31,7 @@ SELECT current_database () AS table_catalog,
             END AS is_nullable,
         pg_catalog.pg_get_expr ( ad.adbin, ad.adrelid )  AS column_default,
         CASE
-            WHEN t.typtype = 'd' THEN current_database()
+            WHEN t.typtype = 'd' THEN args.db_name
         END AS domain_catalog,
         CASE
             WHEN t.typtype = 'd' THEN nt.nspname
@@ -60,8 +63,8 @@ SELECT current_database () AS table_catalog,
         AND NOT a.attisdropped
         AND n.nspname <> 'information_schema'
         AND n.nspname !~ '^pg_'
-        AND ( n.nspname = args.schema_name OR ( args.schema_name = '' AND args.table_name = '' ) )
-        AND ( c.relname = args.table_name OR args.table_name = '' )
+        AND ( n.nspname = args.schema_name OR args.ignore_schema )
+        AND ( c.relname = args.table_name OR args.ignore_table )
     ORDER BY n.nspname,
         c.relname,
         a.attnum

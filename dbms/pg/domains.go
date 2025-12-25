@@ -13,9 +13,11 @@ func Domains(db *sql.DB, schemaName string) ([]m.Domain, error) {
 
 	q := `
 WITH args AS (
-    SELECT coalesce ( $1, '' ) AS schema_name
+    SELECT current_database () AS db_name,
+            coalesce ( $1, '' ) AS schema_name,
+            coalesce ( $1, '' ) = '' AS ignore_schema
 )
-SELECT current_database() AS domain_catalog,
+SELECT args.db_name AS domain_catalog,
         n.nspname AS domain_schema,
         t.typname AS domain_name,
         pg_catalog.pg_get_userbyid ( t.typowner ) AS domain_owner,
@@ -36,7 +38,7 @@ SELECT current_database() AS domain_catalog,
         AND n.nspname <> 'information_schema'
         AND n.nspname !~ '^pg_'
         AND ( n.nspname = args.schema_name
-            OR args.schema_name = '' )
+            OR args.ignore_schema )
 `
 
 	return m.Domains(db, q, schemaName)
