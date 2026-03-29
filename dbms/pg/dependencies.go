@@ -47,12 +47,12 @@ SELECT DISTINCT args.db_name AS object_catalog,
         n.nspname AS object_schema,
         c.relname AS object_name,
         pg_catalog.pg_get_userbyid ( c.relowner ) AS object_owner,
-        coalesce ( tt.label, 'other (' || c.relkind || ')' ) AS object_type,
+        coalesce ( tt.label, 'other (' || c.relkind::text || ')' ) AS object_type,
         args.db_name AS dep_object_catalog,
         n2.nspname AS dep_object_schema,
         c2.relname AS dep_object_name,
         pg_catalog.pg_get_userbyid ( c2.relowner ) AS dep_object_owner,
-        coalesce ( rt.label, 'other (' || c2.relkind || ')' ) AS dep_object_type
+        coalesce ( rt.label, 'other (' || c2.relkind::text || ')' ) AS dep_object_type
     FROM pg_catalog.pg_class c
     CROSS JOIN args
     INNER JOIN dep_map d
