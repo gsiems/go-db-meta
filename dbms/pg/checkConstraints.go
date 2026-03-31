@@ -13,33 +13,35 @@ func CheckConstraints(db *sql.DB, schemaName, tableName string) ([]m.CheckConstr
 
 	q := `
 WITH args AS (
-    SELECT current_database () AS db_name,
+    SELECT pg_catalog.current_database () AS db_name,
             coalesce ( $1, '' ) AS schema_name,
             coalesce ( $2, '' ) AS table_name,
             coalesce ( $1, $2, '' ) = '' AS ignore_schema,
             coalesce ( $2, '' ) = '' AS ignore_table
 )
-SELECT args.db_name AS table_catalog,
-        n.nspname AS table_schema,
-        r.relname AS table_name,
-        con.conname AS constraint_name,
-        substring ( pg_get_constraintdef ( con.oid ), 7 ) AS check_clause,
+SELECT args.db_name::text AS table_catalog,
+        n.nspname::text AS table_schema,
+        r.relname::text AS table_name,
+        con.conname::text AS constraint_name,
+        substring ( pg_catalog.pg_get_constraintdef ( con.oid ), 7 ) AS check_clause,
         'Enabled' AS status,
         d.description AS comments
-    FROM pg_class r
+    FROM pg_catalog.pg_class r
     CROSS JOIN args
-    INNER JOIN pg_namespace n
+    INNER JOIN pg_catalog.pg_namespace n
         ON ( n.oid = r.relnamespace )
-    INNER JOIN pg_constraint con
+    INNER JOIN pg_catalog.pg_constraint con
         ON ( con.conrelid = r.oid )
-    LEFT OUTER JOIN pg_description d
+    LEFT OUTER JOIN pg_catalog.pg_description d
         ON ( d.objoid = con.oid )
     WHERE r.relkind = 'r'
         AND con.contype = 'c'
         AND n.nspname <> 'information_schema'
         AND n.nspname !~ '^pg_'
-        AND ( n.nspname = args.schema_name OR args.ignore_schema )
-        AND ( r.relname = args.table_name OR args.ignore_table )
+        AND ( n.nspname = args.schema_name
+            OR args.ignore_schema )
+        AND ( r.relname = args.table_name
+            OR args.ignore_table )
 `
 	return m.CheckConstraints(db, q, schemaName, tableName)
 }

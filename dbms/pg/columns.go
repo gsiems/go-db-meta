@@ -13,32 +13,23 @@ func Columns(db *sql.DB, schemaName, tableName string) ([]m.Column, error) {
 
 	q := `
 WITH args AS (
-    SELECT current_database () AS db_name,
+    SELECT pg_catalog.current_database () AS db_name,
             coalesce ( $1, '' ) AS schema_name,
             coalesce ( $2, '' ) AS table_name,
             coalesce ( $1, $2, '' ) = '' AS ignore_schema,
             coalesce ( $2, '' ) = '' AS ignore_table
 )
-SELECT args.db_name AS table_catalog,
-        n.nspname AS table_schema,
-        c.relname AS table_name,
-        a.attname AS column_name,
+SELECT args.db_name::text AS table_catalog,
+        n.nspname::text AS table_schema,
+        c.relname::text AS table_name,
+        a.attname::text AS column_name,
         a.attnum AS ordinal_position,
         pg_catalog.format_type ( a.atttypid, a.atttypmod ) AS data_type,
-        CASE
-            WHEN a.attnotnull THEN 'NO'
-            ELSE 'YES'
-            END AS is_nullable,
-        pg_catalog.pg_get_expr ( ad.adbin, ad.adrelid )  AS column_default,
-        CASE
-            WHEN t.typtype = 'd' THEN args.db_name
-        END AS domain_catalog,
-        CASE
-            WHEN t.typtype = 'd' THEN nt.nspname
-        END AS domain_schema,
-         CASE
-            WHEN t.typtype = 'd' THEN t.typname
-        END AS domain_name,
+        CASE WHEN a.attnotnull THEN 'NO' ELSE 'YES' END AS is_nullable,
+        pg_catalog.pg_get_expr ( ad.adbin, ad.adrelid ) AS column_default,
+        CASE WHEN t.typtype = 'd' THEN args.db_name::text END AS domain_catalog,
+        CASE WHEN t.typtype = 'd' THEN nt.nspname::text END AS domain_schema,
+        CASE WHEN t.typtype = 'd' THEN t.typname::text END AS domain_name,
         -- udt_catalog
         -- udt_schema
         -- udt_name
@@ -54,17 +45,19 @@ SELECT args.db_name AS table_catalog,
     LEFT OUTER JOIN pg_catalog.pg_attrdef ad
         ON ( a.attrelid = ad.adrelid
             AND a.attnum = ad.adnum )
-    JOIN pg_type t
+    INNER JOIN pg_type t
         ON ( a.atttypid = t.oid )
-    JOIN pg_namespace nt
+    INNER JOIN pg_namespace nt
         ON ( t.typnamespace = nt.oid )
     WHERE c.relkind IN ( 'v', 'r', 'f', 'p', 'm' )
         AND a.attnum > 0
         AND NOT a.attisdropped
         AND n.nspname <> 'information_schema'
         AND n.nspname !~ '^pg_'
-        AND ( n.nspname = args.schema_name OR args.ignore_schema )
-        AND ( c.relname = args.table_name OR args.ignore_table )
+        AND ( n.nspname = args.schema_name
+            OR args.ignore_schema )
+        AND ( c.relname = args.table_name
+            OR args.ignore_table )
     ORDER BY n.nspname,
         c.relname,
         a.attnum

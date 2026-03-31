@@ -13,30 +13,31 @@ func Types(db *sql.DB, schemaName string) ([]m.Type, error) {
 
 	q := `
 WITH args AS (
-    SELECT current_database () AS db_name,
+    SELECT pg_catalog.current_database () AS db_name,
             coalesce ( $1, '' ) AS schema_name,
             coalesce ( $1, '' ) = '' AS ignore_schema
 )
-SELECT args.db_name AS user_defined_type_catalog,
-        n.nspname AS user_defined_type_schema,
-        t.typname AS user_defined_type_name,
-        pg_catalog.pg_get_userbyid ( t.typowner ) AS user_defined_type_owner,
+SELECT args.db_name::text AS user_defined_type_catalog,
+        n.nspname::text AS user_defined_type_schema,
+        t.typname::text AS user_defined_type_name,
+        pg_catalog.pg_get_userbyid ( t.typowner )::text AS user_defined_type_owner,
         pg_catalog.obj_description ( t.oid, 'pg_type' ) AS comment
     FROM pg_catalog.pg_type t
     CROSS JOIN args
-    JOIN pg_catalog.pg_namespace n
+    INNER JOIN pg_catalog.pg_namespace n
         ON n.oid = t.typnamespace
-    LEFT JOIN pg_catalog.pg_type bt
+    LEFT OUTER JOIN pg_catalog.pg_type bt
         ON ( bt.oid = t.typbasetype )
     WHERE ( t.typrelid = 0
-            OR ( SELECT c.relkind = 'c'
+            OR (
+                SELECT c.relkind = 'c'
                     FROM pg_catalog.pg_class c
                     WHERE c.oid = t.typrelid ) )
         AND NOT EXISTS (
-                SELECT 1
-                    FROM pg_catalog.pg_type el
-                    WHERE el.oid = t.typelem
-                        AND el.typarray = t.oid )
+            SELECT 1
+                FROM pg_catalog.pg_type el
+                WHERE el.oid = t.typelem
+                    AND el.typarray = t.oid )
         AND n.nspname <> 'information_schema'
         AND n.nspname !~ '^pg_'
         AND t.typtype NOT IN ( 'p' )

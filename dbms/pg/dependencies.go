@@ -13,7 +13,7 @@ func Dependencies(db *sql.DB, schemaName, objectName string) ([]m.Dependency, er
 
 	q := `
 WITH args AS (
-    SELECT current_database () AS db_name,
+    SELECT pg_catalog.current_database () AS db_name,
             coalesce ( $1, '' ) AS schema_name,
             coalesce ( $2, '' ) AS object_name,
             coalesce ( $1, $2, '' ) = '' AS ignore_schema,
@@ -34,7 +34,7 @@ types AS (
 dependents AS (
     SELECT ev_class,
             split_part ( regexp_split_to_table ( ev_action, ':relid ' ), ' ', 1 ) AS dependent_oid
-        FROM pg_rewrite
+        FROM pg_catalog.pg_rewrite
 ),
 dep_map AS (
     SELECT ev_class AS parent_oid,
@@ -43,15 +43,15 @@ dep_map AS (
         WHERE dependent_oid NOT LIKE '%QUERY'
             AND ev_class <> dependent_oid::oid
 )
-SELECT DISTINCT args.db_name AS object_catalog,
-        n.nspname AS object_schema,
-        c.relname AS object_name,
-        pg_catalog.pg_get_userbyid ( c.relowner ) AS object_owner,
+SELECT DISTINCT args.db_name::text AS object_catalog,
+        n.nspname::text AS object_schema,
+        c.relname::text AS object_name,
+        pg_catalog.pg_get_userbyid ( c.relowner )::text AS object_owner,
         coalesce ( tt.label, 'other (' || c.relkind::text || ')' ) AS object_type,
-        args.db_name AS dep_object_catalog,
-        n2.nspname AS dep_object_schema,
-        c2.relname AS dep_object_name,
-        pg_catalog.pg_get_userbyid ( c2.relowner ) AS dep_object_owner,
+        args.db_name::text AS dep_object_catalog,
+        n2.nspname::text AS dep_object_schema,
+        c2.relname::text AS dep_object_name,
+        pg_catalog.pg_get_userbyid ( c2.relowner )::text AS dep_object_owner,
         coalesce ( rt.label, 'other (' || c2.relkind::text || ')' ) AS dep_object_type
     FROM pg_catalog.pg_class c
     CROSS JOIN args
@@ -60,9 +60,9 @@ SELECT DISTINCT args.db_name AS object_catalog,
     INNER JOIN pg_catalog.pg_class c2
         ON ( c2.oid = d.child_oid )
     INNER JOIN types AS tt
-        ON ( tt.relkind = c.relkind )
+        ON ( tt.relkind = c.relkind::text )
     INNER JOIN types AS rt
-        ON ( rt.relkind = c2.relkind )
+        ON ( rt.relkind = c2.relkind::text )
     INNER JOIN pg_catalog.pg_namespace n
         ON ( n.oid = c.relnamespace )
     INNER JOIN pg_catalog.pg_namespace n2
@@ -71,10 +71,14 @@ SELECT DISTINCT args.db_name AS object_catalog,
         AND n.nspname !~ '^pg_'
         AND n2.nspname <> 'information_schema'
         AND n2.nspname !~ '^pg_'
-        AND ( ( ( n.nspname = args.schema_name OR ( args.ignore_schema ) )
-                    AND ( c.relname = args.object_name OR args.ignore_object ) )
-                OR ( ( n2.nspname = args.schema_name OR args.ignore_schema )
-                    AND ( c2.relname = args.object_name OR args.ignore_object ) ) )
+        AND ( ( ( n.nspname = args.schema_name
+                    OR ( args.ignore_schema ) )
+                AND ( c.relname = args.object_name
+                    OR args.ignore_object ) )
+            OR ( ( n2.nspname = args.schema_name
+                    OR args.ignore_schema )
+                AND ( c2.relname = args.object_name
+                    OR args.ignore_object ) ) )
 `
 	return m.Dependencies(db, q, schemaName, objectName)
 }

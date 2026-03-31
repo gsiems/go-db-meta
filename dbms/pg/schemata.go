@@ -12,12 +12,12 @@ import (
 func Schemata(db *sql.DB, nclude, xclude string) ([]m.Schema, error) {
 
 	q := `
-SELECT pg_catalog.current_database () AS catalog_name,
-        n.nspname AS schema_name,
-        pg_catalog.pg_get_userbyid ( n.nspowner ) AS schema_owner,
-        NULL::name AS character_set_catalog,
-        NULL::name AS character_set_schema,
-        NULL::name AS character_set_name,
+SELECT pg_catalog.current_database ()::text AS catalog_name,
+        n.nspname::text AS schema_name,
+        pg_catalog.pg_get_userbyid ( n.nspowner )::text AS schema_owner,
+        NULL::text AS character_set_catalog,
+        NULL::text AS character_set_schema,
+        NULL::text AS character_set_name,
         pg_catalog.obj_description ( n.oid, 'pg_namespace' ) AS comments
     FROM pg_catalog.pg_namespace n
     WHERE n.nspname <> 'information_schema'

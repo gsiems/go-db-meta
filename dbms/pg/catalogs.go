@@ -12,9 +12,9 @@ import (
 func CurrentCatalog(db *sql.DB) (m.Catalog, error) {
 
 	q := `
-SELECT d.datname AS catalog_name,
-        pg_catalog.pg_get_userbyid ( d.datdba ) AS owner,
-        pg_catalog.pg_encoding_to_char ( d.encoding ) AS encoding,
+SELECT d.datname::text AS catalog_name,
+        pg_catalog.pg_get_userbyid ( d.datdba )::text AS owner,
+        pg_catalog.pg_encoding_to_char ( d.encoding )::text AS encoding,
         pg_catalog.version () AS version,
         pg_catalog.shobj_description ( d.oid, 'pg_database' ) AS comments
     FROM pg_catalog.pg_database d

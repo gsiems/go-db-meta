@@ -14,13 +14,13 @@ func ReferentialConstraints(db *sql.DB, schemaName, tableName string) ([]m.Refer
 
 	q := `
 WITH args AS (
-    SELECT current_database () AS db_name,
+    SELECT pg_catalog.current_database () AS db_name,
             coalesce ( $1, '' ) AS schema_name,
             coalesce ( $2, '' ) AS table_name,
             coalesce ( $1, $2, '' ) = '' AS ignore_schema,
             coalesce ( $2, '' ) = '' AS ignore_table
 ),
-conftypes as (
+conftypes AS (
     SELECT *
         FROM (
             VALUES
@@ -45,17 +45,17 @@ referential_constraints AS (
             dr.label AS delete_rule,
             regexp_split_to_array ( pg_catalog.pg_get_constraintdef ( con.oid ), '[\(\)]' ) AS def
         FROM pg_catalog.pg_constraint con
-        JOIN pg_catalog.pg_class tbl
+        INNER JOIN pg_catalog.pg_class tbl
             ON ( tbl.oid = con.conrelid )
-        JOIN pg_catalog.pg_namespace tsc
+        INNER JOIN pg_catalog.pg_namespace tsc
             ON ( tsc.oid = tbl.relnamespace )
-        JOIN pg_catalog.pg_class rcon
+        INNER JOIN pg_catalog.pg_class rcon
             ON ( rcon.oid = con.conindid )
-        LEFT JOIN conftypes mr
+        LEFT OUTER JOIN conftypes mr
             ON ( mr.conftype = con.confmatchtype::text )
-        LEFT JOIN conftypes ur
+        LEFT OUTER JOIN conftypes ur
             ON ( ur.conftype = con.confupdtype::text )
-        LEFT JOIN conftypes dr
+        LEFT OUTER JOIN conftypes dr
             ON ( dr.conftype = con.confdeltype::text )
         WHERE con.contype = 'f'
             AND tsc.nspname <> 'information_schema'
@@ -76,12 +76,12 @@ base AS (
             con.delete_rule
         FROM referential_constraints con
 )
-SELECT args.db_name AS table_catalog,
+SELECT args.db_name::text AS table_catalog,
         base.table_schema,
         base.table_name,
         base.column_names,
         base.constraint_name,
-        args.db_name AS ref_table_catalog,
+        args.db_name::text AS ref_table_catalog,
         base.ref_table_schema,
         base.ref_table_name,
         base.ref_column_names,
@@ -95,10 +95,14 @@ SELECT args.db_name AS table_catalog,
     LEFT OUTER JOIN pg_catalog.pg_description d
         ON ( d.objoid = base.oid )
     CROSS JOIN args
-    WHERE ( ( base.table_schema = args.schema_name OR args.ignore_schema )
-            AND ( base.table_name = args.table_name OR args.ignore_table ) )
-        OR ( ( base.ref_table_schema = args.schema_name OR args.ignore_schema )
-            AND ( base.ref_table_name = args.table_name OR args.ignore_table ) )
+    WHERE ( ( base.table_schema = args.schema_name
+                OR args.ignore_schema )
+            AND ( base.table_name = args.table_name
+                OR args.ignore_table ) )
+        OR ( ( base.ref_table_schema = args.schema_name
+                OR args.ignore_schema )
+            AND ( base.ref_table_name = args.table_name
+                OR args.ignore_table ) )
 `
 	return m.ReferentialConstraints(db, q, schemaName, tableName)
 }
